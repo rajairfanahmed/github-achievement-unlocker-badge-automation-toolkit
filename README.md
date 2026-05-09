@@ -119,7 +119,7 @@ http://localhost:3000
 
 ## Complete `.env` Setup Guide (Very Beginner Friendly)
 
-If your friend is asking where to find `token`, `username`, and `target repo`, use this section exactly.
+If you can't understand where to find `token`, `username`, and `target repo`, use this section exactly.
 
 ### Step A - Find your GitHub username
 
@@ -177,7 +177,7 @@ If you do not have a repo yet:
 2. Create any test repo under your account
 3. Use that repo path as `TARGET_REPO`
 
-### Step D - Optional helper token (`HELPER_TOKEN`)
+### Step D - Helper Token (`HELPER_TOKEN`)
 
 Required only for helper-based badges (Galaxy Brain / YOLO).
 
