@@ -29,12 +29,12 @@ This work is based on and improved from the original project by `n0`:
 - Original repository: [n0/GitHub-Achievement-CLI](https://github.com/n0/GitHub-Achievement-CLI)
 
 This fork/version adds UX and operational improvements, such as:
-- local web dashboard flow and status visibility
-- clearer tier/progress messaging
-- stop active run control
-- light-only web theme
-- better history readability with pagination
-- environment/bootstrap quality-of-life updates
+- local Next.js dashboard (runs on port **3000** via `npm run web:dev`)
+- contextual strip for repo account, REST rate limit, live job polling
+- achievement cards with clearer tier/progress UX, finished-tier protection, and badge artwork
+- cooperative **Stop run** for active jobs (respects in-flight GitHub requests)
+- history tables with pagination
+- `postinstall` bootstrap that creates `.env` from `.env.example` when missing
 
 ## Supported Achievements (Current)
 
@@ -66,9 +66,24 @@ Tip: icon variant changes by tier (`default`, `bronze`, `silver`, `gold`) where 
 
 - Node.js `18+`
 - npm
-- GitHub Personal Access Token (classic) with `repo` scope
-- Target repository where your main account has write access
-- Helper account token for workflows that require a second account (Galaxy Brain / YOLO)
+- GitHub Personal Access Token (classic) with **`repo`** scope for your **main** account
+- A **target repository** where the main account has **write** access (most workflows create branches, PRs, issues, or merges here)
+- For **Galaxy Brain** and **YOLO**: a **second GitHub account** plus `HELPER_TOKEN`, and for Galaxy Brain **repository Discussions must be enabled** on `TARGET_REPO`
+- For **Public Sponsor**: payment/sponsorship happens outside the app; the tool verifies state via the API (ensure your token can read the relevant data—use the dashboard **Overview** if something is blocked)
+
+## Enable Discussions on your target repository (Galaxy Brain)
+
+Galaxy Brain automation uses **GitHub Discussions**. Enable them on the repo you set as `TARGET_REPO`:
+
+1. Sign in to GitHub as someone who can change repo settings (usually the **owner**, or a user with **Admin** on the repo).
+2. Open your repository: `https://github.com/YOUR_USER/YOUR_REPO`.
+3. Click **Settings** (repo settings, not your global account settings).
+4. In the left sidebar, under **General**, scroll to **Features**.
+5. Toggle **Discussions** **On**.
+6. Go back to the repo main page and confirm a **Discussions** tab appears next to **Issues** / **Pull requests**.
+7. (Recommended) In **Discussions**, open **Categories** and ensure you have an answer-friendly category (for example **Q&A**). The workflow needs a place where answers can be marked accepted.
+
+If Discussions stay off, the dashboard will show Galaxy Brain as blocked until you enable them.
 
 ## Beginner Quick Start (Step-by-Step)
 
@@ -80,7 +95,10 @@ cd GitHub-Achievement-CLI
 npm install
 ```
 
-On `npm install`, this project now auto-creates `.env` from `.env.example` **if `.env` does not already exist**.
+What `npm install` does in this repo:
+
+- **`postinstall`**: if `.env` does not exist yet, it is copied from `.env.example` so you only fill in values.
+- **`prepare`**: runs **`npm run build`** (TypeScript compile to `dist/`). The first install therefore also produces the CLI build output.
 
 ### 2) Fill required `.env` values
 
@@ -98,7 +116,15 @@ If using helper-required achievements, also set:
 HELPER_TOKEN=ghp_your_helper_account_token
 ```
 
-### 3) Build and run
+### 3) Run the CLI (after install)
+
+If you already ran `npm install`, you can usually start immediately:
+
+```bash
+npm start
+```
+
+If you disabled lifecycle scripts or removed `dist/`, compile again:
 
 ```bash
 npm run build
@@ -116,6 +142,13 @@ Then open:
 ```text
 http://localhost:3000
 ```
+
+In the dashboard:
+
+- Use **Overview** for preflight (`.env`, tokens, repo access, Discussions, rate limit).
+- Use **Achievements** to pick a tier per badge and **Run** / **Resume** (only **one** job runs globally at a time). Use **Stop run** when you need to stop cooperatively.
+- Use **History** for local snapshots and stored operations with GitHub links.
+- Use **Settings** for env summary (no secrets shown) and optional desktop notifications.
 
 ## Complete `.env` Setup Guide (Very Beginner Friendly)
 
@@ -185,6 +218,7 @@ Required only for helper-based badges (Galaxy Brain / YOLO).
 2. Open `https://github.com/settings/tokens`
 3. Generate classic token with:
    - `repo`
+   - `write:discussion` (recommended for **Galaxy Brain** so discussions can be created/participated in as documented in `.env.example`)
 4. Put in `.env`:
 
 ```env
@@ -194,6 +228,12 @@ HELPER_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 Important:
 - `GITHUB_TOKEN` and `HELPER_TOKEN` must be from different accounts.
 - Helper account should have collaborator access to the target repo.
+
+### Step D2 - Invite the helper account to `TARGET_REPO`
+
+1. Repo **Settings → Collaborators and teams → Add people**.
+2. Invite the helper’s GitHub username with **Write** access (or sufficient access to collaborate on PRs/discussions).
+3. The helper must **accept** the email/notification invite before workflows can run reliably.
 
 ### Step E - Final `.env` example
 
@@ -210,7 +250,10 @@ Before running, confirm:
 - `GITHUB_USERNAME` matches the owner of `GITHUB_TOKEN`
 - `TARGET_REPO` exists and you can open it in browser
 - Main account has write access to `TARGET_REPO`
+- For **Galaxy Brain**: Discussions are enabled on `TARGET_REPO` (see section above), helper collaborator invite accepted
 - `.env` is in project root (same folder as `package.json`)
+
+Progress files: the app saves local state to **`achievements-data-<username>.json`** in the project folder (already gitignored)—this is separate from GitHub’s own profile badges.
 
 ### Common copy mistakes (very common)
 
@@ -237,8 +280,8 @@ Do not set both to the same account.
 
 ## CLI + Dashboard Overview
 
-- **CLI** (`npm start`): setup, execute, status, reset options
-- **Dashboard** (`npm run web:dev`): preflight checks, achievements, history, settings, active job panel
+- **CLI** (`npm start`): Ink UI for interactive setup, run achievements, view status/history helpers, repo reset tooling as implemented in the CLI
+- **Dashboard** (`npm run web:dev`): Overview preflight + **Achievements** runner cards + paginated History + Settings (notifications sync); sticky job panel + **Stop run**
 
 ## Rate Limit and Safety
 
