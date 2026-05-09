@@ -180,14 +180,27 @@ function getPageNumberWindow(currentPage: number, totalPages: number): Array<num
 }
 
 function getBadgeImageUrl(id: WebAchievement['id'], tier: TierLevel | undefined): string {
+  const providedDefaultIcons: Partial<Record<WebAchievement['id'], string>> = {
+    'galaxy-brain': 'https://github.githubassets.com/assets/galaxy-brain-default-847262c21056.png',
+    'pull-shark': 'https://github.githubassets.com/assets/pull-shark-default-498c279a747d.png',
+    'pair-extraordinaire': 'https://github.githubassets.com/assets/pair-extraordinaire-default-579438a20e01.png',
+    yolo: 'https://github.githubassets.com/assets/yolo-default-be0bbff04951.png',
+    quickdraw: 'https://github.githubassets.com/assets/quickdraw-default-39c6aec8ff89.png',
+    starstruck: 'https://github.githubassets.com/assets/starstruck-default--light-a594e2a027e0.png',
+  };
+
+  if (tier === 'default' && providedDefaultIcons[id]) {
+    return providedDefaultIcons[id];
+  }
+
   const suffixByTier: Record<TierLevel, string> = {
-    default: '',
+    default: '-default',
     bronze: '-bronze',
     silver: '-silver',
     gold: '-gold',
   };
-  const safeTier: TierLevel = tier ?? 'default';
-  return `https://github.githubassets.com/images/modules/profile/achievements/${id}${suffixByTier[safeTier]}-64.png`;
+
+  return `https://github.githubassets.com/images/modules/profile/achievements/${id}${suffixByTier[tier ?? 'default']}-64.png`;
 }
 
 export default function Dashboard() {

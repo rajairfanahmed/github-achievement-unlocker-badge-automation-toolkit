@@ -52,12 +52,12 @@ This fork/version adds UX and operational improvements, such as:
 
 | Badge | Icon | Quick Info |
 | --- | --- | --- |
-| Pair Extraordinaire | ![Pair Extraordinaire](https://github.githubassets.com/images/modules/profile/achievements/pair-extraordinaire-64.png) | Coauthored commits on merged PRs |
-| Pull Shark | ![Pull Shark](https://github.githubassets.com/images/modules/profile/achievements/pull-shark-64.png) | PRs that get merged |
-| Galaxy Brain | ![Galaxy Brain](https://github.githubassets.com/images/modules/profile/achievements/galaxy-brain-64.png) | Accepted Discussion answers |
-| Quickdraw | ![Quickdraw](https://github.githubassets.com/images/modules/profile/achievements/quickdraw-64.png) | Close issue within 5 minutes |
-| YOLO | ![YOLO](https://github.githubassets.com/images/modules/profile/achievements/yolo-64.png) | Merge without code review |
-| Starstruck | ![Starstruck](https://github.githubassets.com/images/modules/profile/achievements/starstruck-64.png) | Reach star milestone on one repo |
+| Pair Extraordinaire | ![Pair Extraordinaire](https://github.githubassets.com/assets/pair-extraordinaire-default-579438a20e01.png) | Coauthored commits on merged PRs |
+| Pull Shark | ![Pull Shark](https://github.githubassets.com/assets/pull-shark-default-498c279a747d.png) | PRs that get merged |
+| Galaxy Brain | ![Galaxy Brain](https://github.githubassets.com/assets/galaxy-brain-default-847262c21056.png) | Accepted Discussion answers |
+| Quickdraw | ![Quickdraw](https://github.githubassets.com/assets/quickdraw-default-39c6aec8ff89.png) | Close issue within 5 minutes |
+| YOLO | ![YOLO](https://github.githubassets.com/assets/yolo-default-be0bbff04951.png) | Merge without code review |
+| Starstruck | ![Starstruck](https://github.githubassets.com/assets/starstruck-default--light-a594e2a027e0.png) | Reach star milestone on one repo |
 | Public Sponsor | ![Public Sponsor](https://github.githubassets.com/images/modules/profile/achievements/public-sponsor-64.png) | Public sponsorship verification |
 
 Tip: icon variant changes by tier (`default`, `bronze`, `silver`, `gold`) where GitHub provides tiered artwork.
