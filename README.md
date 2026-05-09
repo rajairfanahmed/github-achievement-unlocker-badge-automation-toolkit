@@ -117,26 +117,110 @@ Then open:
 http://localhost:3000
 ```
 
-## Easy `.env` Guide for Beginners
+## Complete `.env` Setup Guide (Very Beginner Friendly)
 
-### Required keys
+If your friend is asking where to find `token`, `username`, and `target repo`, use this section exactly.
 
-- `GITHUB_TOKEN`: token of the account that should receive achievements
-- `GITHUB_USERNAME`: same account username
-- `TARGET_REPO`: repo where automation will create branches/issues/PRs
+### Step A - Find your GitHub username
 
-### Optional but useful keys
+1. Open `https://github.com` and sign in.
+2. Click your profile photo (top-right).
+3. Click **Your profile**.
+4. Your username is in the URL:
+   - Example URL: `https://github.com/rajairfanahmed`
+   - Username: `rajairfanahmed`
+5. Put this in `.env`:
 
-- `HELPER_TOKEN`: second account token (required for some achievements)
-- `DELAY_MS`: increase if you want slower, safer API pacing
-- `LOG_LEVEL`: `info` / `debug` / `warn` / `error`
+```env
+GITHUB_USERNAME=rajairfanahmed
+```
 
-### Token creation tips
+### Step B - Create `GITHUB_TOKEN` (main account token)
 
-1. Go to `https://github.com/settings/tokens`
-2. Create a classic token with `repo` scope
-3. Never share a token in screenshots/chat/commits
-4. If leaked, revoke immediately and create a new one
+This token must belong to the same account that should receive achievements.
+
+1. While signed in to your main GitHub account, open:
+   - `https://github.com/settings/tokens`
+2. Click **Generate new token (classic)**.
+3. Add a note (example: `Achievement Toolkit Main Token`).
+4. Select expiry as you prefer.
+5. Select scope:
+   - `repo` (required)
+6. Click **Generate token**.
+7. Copy token immediately (GitHub will not show it again).
+8. Put this in `.env`:
+
+```env
+GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### Step C - Find/create your `TARGET_REPO`
+
+`TARGET_REPO` format is always:
+
+```text
+owner/repository-name
+```
+
+How to find it:
+1. Open your repository in browser.
+2. Look at URL:
+   - Example: `https://github.com/rajairfanahmed/github-achievement-unlocker-badge-automation-toolkit`
+3. Then:
+
+```env
+TARGET_REPO=rajairfanahmed/github-achievement-unlocker-badge-automation-toolkit
+```
+
+If you do not have a repo yet:
+1. Click `+` on GitHub top-right -> **New repository**
+2. Create any test repo under your account
+3. Use that repo path as `TARGET_REPO`
+
+### Step D - Optional helper token (`HELPER_TOKEN`)
+
+Required only for helper-based badges (Galaxy Brain / YOLO).
+
+1. Login with a **second GitHub account** (not the main one).
+2. Open `https://github.com/settings/tokens`
+3. Generate classic token with:
+   - `repo`
+4. Put in `.env`:
+
+```env
+HELPER_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+Important:
+- `GITHUB_TOKEN` and `HELPER_TOKEN` must be from different accounts.
+- Helper account should have collaborator access to the target repo.
+
+### Step E - Final `.env` example
+
+```env
+GITHUB_TOKEN=ghp_main_account_token_here
+GITHUB_USERNAME=your-main-username
+TARGET_REPO=your-main-username/your-target-repo
+HELPER_TOKEN=ghp_helper_account_token_here
+```
+
+### Quick validation checklist
+
+Before running, confirm:
+- `GITHUB_USERNAME` matches the owner of `GITHUB_TOKEN`
+- `TARGET_REPO` exists and you can open it in browser
+- Main account has write access to `TARGET_REPO`
+- `.env` is in project root (same folder as `package.json`)
+
+### Common copy mistakes (very common)
+
+- Wrong format:
+  - `TARGET_REPO=https://github.com/user/repo` ❌
+  - `TARGET_REPO=user/repo` ✅
+- Adding quotes around token:
+  - `GITHUB_TOKEN="ghp_xxx"` (usually avoid quotes)
+- Using same account token for helper and main
+- Typo in username or repo name
 
 ## Main Account vs Helper Account
 
