@@ -3,18 +3,18 @@
 Automate and manage GitHub profile achievement workflows with a CLI + local web dashboard.
 
 If you searched for phrases like:
-- github achievement unlocker
-- github badge automation tool
+- GitHub achievement unlocker
+- GitHub badge automation tool
 - earn pull shark quickdraw galaxy brain
-- github achievements script
-- github profile badges automation
+- GitHub achievements script
+- GitHub profile badges automation
 
-this project is built for exactly that use case.
+This project is built for exactly that use case.
 
 ## What This Tool Does
 
 This toolkit helps you:
-- run achievement workflows from terminal or browser dashboard
+- run achievement workflows from the terminal or the browser dashboard
 - track local progress and operation history per GitHub account
 - estimate API usage before running
 - stop active runs safely (cooperative cancel)
@@ -28,7 +28,7 @@ This work is based on and improved from the original project by `n0`:
 - Original profile: [n0](https://github.com/n0)
 - Original repository: [n0/GitHub-Achievement-CLI](https://github.com/n0/GitHub-Achievement-CLI)
 
-This fork/version adds UX and operational improvements such as:
+This fork/version adds UX and operational improvements, such as:
 - local web dashboard flow and status visibility
 - clearer tier/progress messaging
 - stop active run control
@@ -120,8 +120,8 @@ http://localhost:3000
 ### Token creation tips
 
 1. Go to `https://github.com/settings/tokens`
-2. Create classic token with `repo` scope
-3. Never share token in screenshots/chat/commits
+2. Create a classic token with `repo` scope
+3. Never share a token in screenshots/chat/commits
 4. If leaked, revoke immediately and create a new one
 
 ## Main Account vs Helper Account
@@ -144,9 +144,9 @@ Do not set both to the same account.
 
 ## Rate Limit and Safety
 
-- The tool checks GitHub REST budget before runs
+- The tool checks GitHub REST budget before running
 - Uses delays/concurrency controls to reduce throttling
-- Shows API reset ETA in dashboard
+- Shows API reset ETA in the dashboard
 - Supports cooperative stop for active run
 
 ## Troubleshooting
@@ -168,7 +168,7 @@ cp .env.example .env
 
 ### I clicked stop but run still active
 
-Stop is cooperative. Current in-flight API call finishes first, then remaining steps are skipped.
+Stop is cooperative. Current in-flight API call finishes first, then the remaining steps are skipped.
 
 ### Helper account badge is blocked
 
