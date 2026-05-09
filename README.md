@@ -71,84 +71,103 @@ Tip: icon variant changes by tier (`default`, `bronze`, `silver`, `gold`) where 
 - For **Galaxy Brain** and **YOLO**: a **second GitHub account** plus `HELPER_TOKEN`, and for Galaxy Brain **repository Discussions must be enabled** on `TARGET_REPO`
 - For **Public Sponsor**: payment/sponsorship happens outside the app; the tool verifies state via the API (ensure your token can read the relevant data—use the dashboard **Overview** if something is blocked)
 
-## Enable Discussions on your target repository (Galaxy Brain)
+## Complete beginner path (step by step, one flow)
 
-Galaxy Brain automation uses **GitHub Discussions**. Enable them on the repo you set as `TARGET_REPO`:
+Read from top to bottom like a recipe. **Do the steps in order.** If a step says “only for Galaxy Brain,” you can skip it when you do not want that badge—but it is safe to turn Discussions on anyway.
 
-1. Sign in to GitHub as someone who can change repo settings (usually the **owner**, or a user with **Admin** on the repo).
-2. Open your repository: `https://github.com/YOUR_USER/YOUR_REPO`.
-3. Click **Settings** (repo settings, not your global account settings).
-4. In the left sidebar, under **General**, scroll to **Features**.
-5. Toggle **Discussions** **On**.
-6. Go back to the repo main page and confirm a **Discussions** tab appears next to **Issues** / **Pull requests**.
-7. (Recommended) In **Discussions**, open **Categories** and ensure you have an answer-friendly category (for example **Q&A**). The workflow needs a place where answers can be marked accepted.
+**1.** Open [https://github.com](https://github.com) and sign in with the account that should **earn the badges** on the profile. This is your **main account**.
 
-If Discussions stay off, the dashboard will show Galaxy Brain as blocked until you enable them.
+**2.** Decide which repository the tool will use. It can be an old repo or a brand new empty one. Everywhere below we call this your **target repo**. In your mind, remember: “all the automatic issues, PRs, and so on happen **inside this one repo**.”
 
-## Beginner Quick Start (Step-by-Step)
+**3.** If you do not have a target repo yet, create it now:
+   - Click the **+** button at the top right of GitHub.
+   - Click **New repository**.
+   - Choose any name you like (for example `my-achievements-playground`).
+   - You can leave it **public** or **private**; your main account must be able to **write** to it (owner is fine).
+   - Click **Create repository**.
 
-### 1) Clone and install
+**4.** Copy the repo name in the `owner/repo` form. Open the repo in the browser. Look at the address bar.
+   - Example address: `https://github.com/alice/hello-world`
+   - The value you need is: `alice/hello-world`
+   - You will put that in `.env` as `TARGET_REPO` later.
+
+**5.** *(Only if you plan to earn **Galaxy Brain**.)* Galaxy Brain needs a **Discussions** area on that **same** target repo. Think of Discussions like a forum tab on the repo. Turn it on **before** you run the tool:
+   - **5a.** Make sure you are still logged in as someone who **owns** the repo or has **admin** rights (usually the repo owner).
+   - **5b.** Open your target repo’s home page (the page with **Code**, **Issues**, **Pull requests**).
+   - **5c.** Click **Settings** near the top of the repo page. (This is **repository** Settings, not your profile picture Settings for the whole GitHub account.)
+   - **5d.** In the **left** menu, click **General** if it is not already selected.
+   - **5e.** Scroll down the main page until you see a block named **Features**.
+   - **5f.** Find the line that says **Discussions**.
+   - **5g.** Click the switch so Discussions is **On** (enabled).
+   - **5h.** Click your repository name at the top (or use the browser Back button) to return to the **normal repo home page** (not Settings).
+   - **5i.** Look at the tabs: you should now see **Discussions** next to **Issues** and **Pull requests**. If you do **not** see it, go back to **Settings → General → Features** and make sure the switch is really on.
+   - **5j.** *(Nice to have.)* Click the **Discussions** tab. If GitHub asks you to set up categories, pick or keep a **Q&A** style category so questions and “accepted answers” work the way GitHub expects. You do not need to be perfect here; you mainly need Discussions **on** and a normal place to post.
+
+If you skip step 5 and later run Galaxy Brain, the dashboard will say Discussions are missing until you complete 5a–5i.
+
+**6.** *(Only if you plan **Galaxy Brain** or **YOLO**.)* You need a **second** GitHub account (the **helper**). It must **not** be the same login as the main account.
+
+**7.** *(Only with a helper.)* Invite the helper to the **target repo**:
+   - Open the target repo → **Settings** → **Collaborators** (sometimes labeled **Collaborators and teams**).
+   - **Add people** with the helper’s GitHub username and give at least **Write** access so they can work with PRs and discussions.
+   - The helper must **accept** the invitation (email or GitHub notification). Wait until that is done.
+
+**8.** Create a **classic** token for the **main** account: [https://github.com/settings/tokens](https://github.com/settings/tokens) → **Generate new token (classic)** → enable scope **`repo`** → generate → copy the token once (GitHub will not show it again). That string is your `GITHUB_TOKEN`.
+
+**9.** *(Only with a helper.)* While logged into the **helper** account, create another classic token with scopes **`repo`** and **`write:discussion`** (needed for Galaxy Brain–style discussion work). That string is your `HELPER_TOKEN`.
+
+**10.** On your **computer**, clone this project and enter the folder:
 
 ```bash
 git clone <your-repo-url>
 cd GitHub-Achievement-CLI
+```
+
+**11.** Install dependencies. The first install also creates `.env` from `.env.example` if needed, and runs a build:
+
+```bash
 npm install
 ```
 
-What `npm install` does in this repo:
-
-- **`postinstall`**: if `.env` does not exist yet, it is copied from `.env.example` so you only fill in values.
-- **`prepare`**: runs **`npm run build`** (TypeScript compile to `dist/`). The first install therefore also produces the CLI build output.
-
-### 2) Fill required `.env` values
-
-Open `.env` and update only these first:
+**12.** Open the file **`.env`** in the project folder (same level as `package.json`). Fill at least:
 
 ```env
-GITHUB_TOKEN=ghp_your_main_account_token
+GITHUB_TOKEN=paste_main_token_here
 GITHUB_USERNAME=your-main-username
-TARGET_REPO=your-main-username/your-target-repo
+TARGET_REPO=owner/repo-from-step-4
 ```
 
-If using helper-required achievements, also set:
+If you use a helper, add one more line:
 
 ```env
-HELPER_TOKEN=ghp_your_helper_account_token
+HELPER_TOKEN=paste_helper_token_here
 ```
 
-### 3) Run the CLI (after install)
-
-If you already ran `npm install`, you can usually start immediately:
+**13.** Start the CLI:
 
 ```bash
 npm start
 ```
 
-If you disabled lifecycle scripts or removed `dist/`, compile again:
+If `dist/` is missing because you skipped install scripts, run `npm run build` then `npm start` again.
 
-```bash
-npm run build
-npm start
-```
-
-### 4) Optional web dashboard
+**14.** *(Optional but recommended.)* Start the local dashboard:
 
 ```bash
 npm run web:dev
 ```
 
-Then open:
+Open [http://localhost:3000](http://localhost:3000). Use **Overview** first (checks env, repo, Discussions if needed, rate limit). Use **Achievements** to run one badge at a time (**only one job** runs at once). **Stop run** stops politely after the current API call. **History** shows what happened; **Settings** shows env summary without secrets.
 
-```text
-http://localhost:3000
-```
+---
 
-In the dashboard:
+**Tiny cheat sheet**
 
-- Use **Overview** for preflight (`.env`, tokens, repo access, Discussions, rate limit).
-- Use **Achievements** to pick a tier per badge and **Run** / **Resume** (only **one** job runs globally at a time). Use **Stop run** when you need to stop cooperatively.
-- Use **History** for local snapshots and stored operations with GitHub links.
-- Use **Settings** for env summary (no secrets shown) and optional desktop notifications.
+| You want | Do not skip |
+| --- | --- |
+| Most badges | Steps 1–4, 8, 10–13 |
+| Galaxy Brain | Step 5 (Discussions), steps 6–7, helper token in step 9 |
+| YOLO | Steps 6–7, helper token (scope `repo` at minimum) |
 
 ## Complete `.env` Setup Guide (Very Beginner Friendly)
 
@@ -250,7 +269,7 @@ Before running, confirm:
 - `GITHUB_USERNAME` matches the owner of `GITHUB_TOKEN`
 - `TARGET_REPO` exists and you can open it in browser
 - Main account has write access to `TARGET_REPO`
-- For **Galaxy Brain**: Discussions are enabled on `TARGET_REPO` (see section above), helper collaborator invite accepted
+- For **Galaxy Brain**: Discussions are enabled on `TARGET_REPO` (see **Complete beginner path**, steps 5a–5i), helper collaborator invite accepted
 - `.env` is in project root (same folder as `package.json`)
 
 Progress files: the app saves local state to **`achievements-data-<username>.json`** in the project folder (already gitignored)—this is separate from GitHub’s own profile badges.
