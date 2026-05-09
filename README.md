@@ -66,123 +66,120 @@ Tip: icon variant changes by tier (`default`, `bronze`, `silver`, `gold`) where 
 
 ## Setup guide
 
-All setup steps live here. Follow **Part 1 → Part 2 → Part 3 → Part 4**. Use every row that applies to the badges you are earning.
+You use **two GitHub accounts**: a **main account** (badges go on this profile) and a **helper account** (second login). All automation happens in **one test repository** owned by the main account (`TARGET_REPO`). Fill **every** item below before you rely on Galaxy Brain, YOLO, or other flows that need the helper.
 
-### At a glance
+Follow **Part A → Part B → Part C → Part D** in order.
 
-| Need | Details |
-| --- | --- |
-| Node.js **18+**, **npm** | |
-| **Main** GitHub account | Profile that should earn badges |
-| Classic PAT, scope **`repo`** | [github.com/settings/tokens](https://github.com/settings/tokens) |
-| **`TARGET_REPO`** | Format `owner/repo` — one repo where your main account can **write** |
-| **Helper** + **`HELPER_TOKEN`** | Only for **Galaxy Brain** & **YOLO** (must be a **different** login than main) |
-| **Discussions ON** | Required for **Galaxy Brain** — [see below](#enable-discussions-galaxy-brain) |
+### What you must have
 
-**Public Sponsor:** subscribe on GitHub Sponsors yourself; this app only verifies afterward.
-
----
-
-### Part 1 — GitHub (account, repo, helper)
-
-| # | Do this |
-| --- | --- |
-| 1 | Sign in at [github.com](https://github.com) as the account that should **get the badges** (**main**). |
-| 2 | Pick **one** repo for all automation, or create it: **+** → **New repository** → **Create** (any name; you need **write** access). |
-| 3 | Set **`TARGET_REPO`** from the URL: `https://github.com/alice/my-repo` → `alice/my-repo` (never paste the full `https://` link). |
-| 4 | **`GITHUB_USERNAME`**: open avatar → **Your profile** → copy the name from the URL `github.com/your-username`. |
-
-**Helper account (Galaxy Brain / YOLO)**
-
-| # | Do this |
-| --- | --- |
-| 5 | Create or use a **second** GitHub user (**helper**). Not the same person as main. |
-| 6 | Target repo → **Settings** → **Collaborators** → add helper → **Write**. Helper must **accept** the invite. |
-
-#### Enable Discussions (Galaxy Brain)
-
-| # | Do this |
-| --- | --- |
-| A | Open the **repository** as owner or admin (repo **Settings**, not account Settings). |
-| B | **General** → **Features** → turn **Discussions** **On**. |
-| C | Back on the repo home, confirm a **Discussions** tab appears. |
-| D | Open **Discussions**; pick a **Q&A** category if GitHub asks — helps “accepted answer” work. |
-
-Without B–C, Galaxy Brain stays blocked in the dashboard.
-
----
-
-### Part 2 — Tokens
-
-Create at [github.com/settings/tokens](https://github.com/settings/tokens) → **Generate new token (classic)**. Copy once; GitHub will not show it again.
-
-| Variable | Who | Scopes |
+| # | Piece | What it is |
 | --- | --- | --- |
-| `GITHUB_TOKEN` | Main | `repo` |
-| `HELPER_TOKEN` | Helper (Galaxy Brain / YOLO) | `repo` + `write:discussion` for Galaxy Brain; YOLO needs at least `repo` on helper |
+| 1 | **Main account** | The GitHub user that should earn achievements on their profile. |
+| 2 | **Test repo** | A repository under the main account (for example `your-main-username/achievement-test`). All branches, PRs, issues, and pushes go **here**. |
+| 3 | **`GITHUB_TOKEN`** | Personal access token (**classic**) created while logged in as the **main** account. Scope: **`repo`**. |
+| 4 | **`TARGET_REPO`** | Same test repo as `owner/repo` — from the URL `https://github.com/your-main-username/repo-name` → `your-main-username/repo-name`. |
+| 5 | **`GITHUB_USERNAME`** | The main account’s username (same as in `TARGET_REPO` when the repo is yours). |
+| 6 | **Discussions ON** | On **that same test repo**: repo **Settings** → **General** → **Features** → enable **Discussions**. Confirm the **Discussions** tab appears on the repo. Use a **Q&A** category if GitHub asks — needed for accepted answers in Discussions. |
+| 7 | **Helper account** | A **second** GitHub user — different login than main. |
+| 8 | **Collaborator invite** | On the test repo: **Settings** → **Collaborators** → add the helper’s **username** → **Write** access. The helper must **accept** the invitation. |
+| 9 | **`HELPER_TOKEN`** | Personal access token (**classic**) created while logged in as the **helper** account. Scopes: **`repo`** and **`write:discussion`** (needed for Discussions workflows). |
 
-Never use one token for both accounts.
+Also: **Node.js 18+** and **npm** on your computer.
+
+**Public Sponsor** is verified separately (you sponsor on GitHub first); this tool only checks your account afterward.
 
 ---
 
-### Part 3 — Install, `.env`, run
+### Part A — Main account, test repo, Discussions
 
-| # | Step |
+| Step | Action |
 | --- | --- |
-| 1 | `git clone <your-repo-url>` and `cd GitHub-Achievement-CLI` |
-| 2 | `npm install` — copies `.env` from `.env.example` if missing; runs build via `prepare` |
+| A1 | Sign in to GitHub as your **main** account (the one that should get the badges). |
+| A2 | Create a **new repository** under this account if you do not have one: **+** → **New repository** → name it (for example `achievement-test`) → **Create repository**. This is your **test repo**. |
+| A3 | Note **`TARGET_REPO`**: `your-main-username` / `repo-you-just-created` → in `.env` write `your-main-username/repo-you-just-created` (no `https://`). |
+| A4 | Note **`GITHUB_USERNAME`**: it is your main account name (same as in the repo URL). |
+| A5 | Open that repo → **Settings** (repo settings, not your profile settings) → **General** → **Features** → turn **Discussions** **On**. Return to the repo home and confirm the **Discussions** tab is visible. |
 
-Edit **`.env`** (next to `package.json`):
+---
+
+### Part B — Helper account and collaborator access
+
+| Step | Action |
+| --- | --- |
+| B1 | Sign in with your **second** account (**helper**) in another browser or after signing out — it must **not** be the main account. |
+| B2 | On the **test repo** (while logged in as **main**): **Settings** → **Collaborators** → **Add people** → enter the helper’s **GitHub username** → choose **Write** → send invite. |
+| B3 | Sign in as the **helper** and **accept** the collaboration invite (email or GitHub notifications). Until this is accepted, PR/discussion flows that need the helper will fail. |
+
+---
+
+### Part C — Tokens (main and helper)
+
+Create tokens at [github.com/settings/tokens](https://github.com/settings/tokens) → **Generate new token (classic)**. Copy each token once.
+
+| Token | Logged in as | Scopes |
+| --- | --- | --- |
+| `GITHUB_TOKEN` | **Main** account | **`repo`** |
+| `HELPER_TOKEN` | **Helper** account | **`repo`** + **`write:discussion`** |
+
+Never reuse one token for both accounts.
+
+---
+
+### Part D — Install this project, `.env`, run
+
+| Step | Action |
+| --- | --- |
+| D1 | Clone and enter the folder: `git clone <your-repo-url>` → `cd GitHub-Achievement-CLI`. |
+| D2 | Run `npm install` (creates `.env` from `.env.example` if missing and builds via `prepare`). |
+| D3 | Edit **`.env`** next to `package.json` with **all** of these lines filled in: |
 
 ```env
-GITHUB_TOKEN=ghp_your_main_token
+GITHUB_TOKEN=ghp_your_main_account_token
 GITHUB_USERNAME=your-main-username
-TARGET_REPO=owner/repo
+TARGET_REPO=your-main-username/your-test-repo-name
+HELPER_TOKEN=ghp_your_helper_account_token
 ```
 
-If you use a helper:
-
-```env
-HELPER_TOKEN=ghp_your_helper_token
-```
-
-| # | Step |
+| Step | Action |
 | --- | --- |
-| 3 | CLI: `npm start` — if `dist/` is missing, run `npm run build` then `npm start` |
-| 4 | Dashboard: `npm run web:dev` → [http://localhost:3000](http://localhost:3000) |
+| D4 | Start the CLI: `npm start` — if `dist/` is missing, run `npm run build` then `npm start`. |
+| D5 | Start the dashboard: `npm run web:dev` → open [http://localhost:3000](http://localhost:3000). |
 
 ---
 
-### Part 4 — Using the dashboard
+### Using the dashboard
 
 | Tab | Purpose |
 | --- | --- |
-| **Overview** | Checks env, repo, Discussions if needed, rate limit |
-| **Achievements** | Choose tier → **Run** / **Resume** — **one global job at a time** |
-| **History** | What ran locally + GitHub links |
+| **Overview** | Checks `.env`, tokens, repo access, Discussions, rate limit |
+| **Achievements** | Pick tier → **Run** / **Resume** — **one job at a time** for the whole app |
+| **History** | Local log with GitHub links |
 | **Settings** | Env summary (no secrets), notifications |
 
-**Stop run** finishes the current API call, then stops.
+**Stop run** waits for the current GitHub request to finish, then stops.
 
 ---
 
-### Before you run (checklist)
+### Final checklist
 
-- [ ] `GITHUB_USERNAME` matches the user that owns `GITHUB_TOKEN`
-- [ ] `TARGET_REPO` is only `owner/repo`
-- [ ] You can open that repo in the browser and your main user can write to it
-- [ ] Galaxy Brain: Discussions on + helper invited and accepted + `HELPER_TOKEN`
-- [ ] `.env` is in the project root with `package.json`
+- [ ] Main account owns or controls the **test repo** used as `TARGET_REPO`
+- [ ] `GITHUB_USERNAME` matches the **main** account that owns `GITHUB_TOKEN`
+- [ ] `TARGET_REPO` is exactly `owner/repo` (not a full URL)
+- [ ] **Discussions** are enabled on that repo and the tab shows on GitHub
+- [ ] **Helper** username is added as **collaborator** on the test repo and the invite is **accepted**
+- [ ] `HELPER_TOKEN` belongs to the **helper** account (different from `GITHUB_TOKEN`)
+- [ ] `.env` sits in the project root next to `package.json`
 
-Progress file: **`achievements-data-<username>.json`** (gitignored), separate from GitHub’s badges.
+Local state file: **`achievements-data-<username>.json`** (gitignored). That is not the same as GitHub’s badge state.
 
 ### Common mistakes
 
 | Wrong | Right |
 | --- | --- |
-| `TARGET_REPO=https://github.com/u/r` | `TARGET_REPO=u/r` |
-| Same token for main and helper | Two accounts, two tokens |
-| `GITHUB_TOKEN="ghp_..."` with quotes | Usually no quotes |
+| `TARGET_REPO=https://github.com/user/repo` | `TARGET_REPO=user/repo` |
+| Same account for both tokens | Main token + helper token from **two** users |
+| Helper not invited or invite not accepted | Invite helper on **test repo** → helper accepts |
+| `GITHUB_TOKEN="ghp_..."` with quotes | Usually omit quotes: `GITHUB_TOKEN=ghp_...` |
 
 ## CLI + Dashboard Overview
 
