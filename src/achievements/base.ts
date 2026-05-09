@@ -26,10 +26,16 @@ import {
   resetStuckOperations,
   getCompletedOperationNumbers,
 } from '../db/database.js';
-import { delay, runWithConcurrency } from '../utils/timing.js';
+import { runWithConcurrency } from '../utils/timing.js';
 import { getRateLimiter } from '../utils/rateLimiter.js';
 import logger from '../utils/logger.js';
 import { wrapError } from '../utils/errors.js';
+import {
+  createRunCancelledError,
+  delayUnlessCancelled,
+  isRunCancelled,
+  isRunCancelledError,
+} from '../utils/runCancellation.js';
 
 export type ProgressCallback = (update: ProgressUpdate) => void;
 
@@ -156,10 +162,18 @@ export abstract class BaseAchievement {
 
       // Create tasks for concurrent execution
       const tasks = pendingOps.map((opNum) => async () => {
+        if (isRunCancelled()) {
+          throw createRunCancelledError();
+        }
+
         // Wait for rate limiter before proceeding
         await rateLimiter.acquire();
 
         try {
+          if (isRunCancelled()) {
+            throw createRunCancelledError();
+          }
+
           // Create operation record
           const operationId = createOperation({
             achievementId: this.achievementId,
@@ -183,7 +197,10 @@ export abstract class BaseAchievement {
 
           // Small delay between operations for stability
           if (this.config.delayMs > 0) {
-            await delay(this.config.delayMs);
+            const cancelledWhileWaiting = await delayUnlessCancelled(this.config.delayMs, 250);
+            if (cancelledWhileWaiting) {
+              throw createRunCancelledError();
+            }
           }
 
           return { success: true, opNum, result };
@@ -200,10 +217,12 @@ export abstract class BaseAchievement {
           completed = Math.min(completedOperations.size + done, this.targetCount);
           updateAchievementProgress(this.achievementId, completed);
           this.reportProgress(completed, `${completed}/${this.targetCount} operations...`);
-        }
+        },
+        () => !isRunCancelled()
       );
 
       // Process results
+      let cancelled = false;
       for (const res of results) {
         if (res.success && res.result) {
           const opResult = res.result as { success: boolean; opNum: number; result: { prNumber?: number } };
@@ -211,6 +230,10 @@ export abstract class BaseAchievement {
             prNumbers.push(opResult.result.prNumber);
           }
         } else if (res.error) {
+          if (isRunCancelledError(res.error)) {
+            cancelled = true;
+            continue;
+          }
           const wrappedError = wrapError(res.error);
           errors.push(`Operation ${res.index + 1}: ${wrappedError.message}`);
           logger.error(`Operation ${res.index + 1} failed: ${wrappedError.message}`);
@@ -220,6 +243,22 @@ export abstract class BaseAchievement {
       // Count successful operations
       const successCount = results.filter(r => r.success).length;
       completed = Math.min(completedOperations.size + successCount, this.targetCount);
+
+      if (cancelled || isRunCancelled()) {
+        updateAchievementProgress(this.achievementId, completed);
+        this.reportProgress(completed, `${completed}/${this.targetCount} operations...`, 'in_progress');
+        return {
+          achievementId: this.achievementId,
+          tier: this.tier,
+          success: false,
+          cancelled: true,
+          completedOperations: completed,
+          totalOperations: this.targetCount,
+          errors,
+          duration: Date.now() - startTime,
+          prNumbers,
+        };
+      }
 
       // Update final status
       const finalStatus: OperationStatus = completed >= this.targetCount ? 'completed' : 'failed';
@@ -238,6 +277,22 @@ export abstract class BaseAchievement {
         prNumbers,
       };
     } catch (error) {
+      if (isRunCancelledError(error) || isRunCancelled()) {
+        updateAchievementProgress(this.achievementId, completed);
+        this.reportProgress(completed, `${completed}/${this.targetCount} operations...`, 'in_progress');
+        return {
+          achievementId: this.achievementId,
+          tier: this.tier,
+          success: false,
+          cancelled: true,
+          completedOperations: completed,
+          totalOperations: this.targetCount,
+          errors,
+          duration: Date.now() - startTime,
+          prNumbers,
+        };
+      }
+
       const wrappedError = wrapError(error);
       updateAchievementStatus(this.achievementId, 'failed');
 

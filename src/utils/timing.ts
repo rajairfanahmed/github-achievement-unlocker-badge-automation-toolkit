@@ -264,7 +264,8 @@ export function throttle<T extends (...args: unknown[]) => unknown>(
 export async function runWithConcurrency<T>(
   tasks: Array<() => Promise<T>>,
   concurrency: number = 3,
-  onProgress?: (completed: number, total: number) => void
+  onProgress?: (completed: number, total: number) => void,
+  shouldContinue?: () => boolean
 ): Promise<Array<{ success: boolean; result?: T; error?: unknown; index: number }>> {
   const results: Array<{ success: boolean; result?: T; error?: unknown; index: number }> = [];
   let completedCount = 0;
@@ -272,6 +273,9 @@ export async function runWithConcurrency<T>(
 
   const executeNext = async (): Promise<void> => {
     while (currentIndex < tasks.length) {
+      if (shouldContinue && !shouldContinue()) {
+        break;
+      }
       const index = currentIndex++;
       const task = tasks[index];
 

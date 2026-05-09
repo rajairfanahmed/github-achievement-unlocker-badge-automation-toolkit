@@ -6,6 +6,14 @@
 import { delay } from './timing.js';
 
 let probe: (() => boolean) | null = null;
+const RUN_CANCELLED_CODE = 'RUN_CANCELLED';
+
+export class RunCancelledError extends Error {
+  constructor(message = 'Run cancelled by user') {
+    super(message);
+    this.name = RUN_CANCELLED_CODE;
+  }
+}
 
 export function setRunCancellationProbe(fn: (() => boolean) | null): void {
   probe = fn;
@@ -13,6 +21,14 @@ export function setRunCancellationProbe(fn: (() => boolean) | null): void {
 
 export function isRunCancelled(): boolean {
   return Boolean(probe?.());
+}
+
+export function createRunCancelledError(): RunCancelledError {
+  return new RunCancelledError();
+}
+
+export function isRunCancelledError(error: unknown): boolean {
+  return error instanceof RunCancelledError || (error instanceof Error && error.name === RUN_CANCELLED_CODE);
 }
 
 /**

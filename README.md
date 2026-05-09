@@ -48,6 +48,20 @@ This fork/version adds UX and operational improvements, such as:
 | Starstruck | Stars on target repo (poll + helper support) | 16 / 128 / 512 / 4096 |
 | Public Sponsor | Verify public sponsorship state | 1 |
 
+## Badge Icons and Quick Info
+
+| Badge | Icon | Quick Info |
+| --- | --- | --- |
+| Pair Extraordinaire | ![Pair Extraordinaire](https://github.githubassets.com/images/modules/profile/achievements/pair-extraordinaire-64.png) | Coauthored commits on merged PRs |
+| Pull Shark | ![Pull Shark](https://github.githubassets.com/images/modules/profile/achievements/pull-shark-64.png) | PRs that get merged |
+| Galaxy Brain | ![Galaxy Brain](https://github.githubassets.com/images/modules/profile/achievements/galaxy-brain-64.png) | Accepted Discussion answers |
+| Quickdraw | ![Quickdraw](https://github.githubassets.com/images/modules/profile/achievements/quickdraw-64.png) | Close issue within 5 minutes |
+| YOLO | ![YOLO](https://github.githubassets.com/images/modules/profile/achievements/yolo-64.png) | Merge without code review |
+| Starstruck | ![Starstruck](https://github.githubassets.com/images/modules/profile/achievements/starstruck-64.png) | Reach star milestone on one repo |
+| Public Sponsor | ![Public Sponsor](https://github.githubassets.com/images/modules/profile/achievements/public-sponsor-64.png) | Public sponsorship verification |
+
+Tip: icon variant changes by tier (`default`, `bronze`, `silver`, `gold`) where GitHub provides tiered artwork.
+
 ## Requirements
 
 - Node.js `18+`

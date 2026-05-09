@@ -179,6 +179,17 @@ function getPageNumberWindow(currentPage: number, totalPages: number): Array<num
   return pages;
 }
 
+function getBadgeImageUrl(id: WebAchievement['id'], tier: TierLevel | undefined): string {
+  const suffixByTier: Record<TierLevel, string> = {
+    default: '',
+    bronze: '-bronze',
+    silver: '-silver',
+    gold: '-gold',
+  };
+  const safeTier: TierLevel = tier ?? 'default';
+  return `https://github.githubassets.com/images/modules/profile/achievements/${id}${suffixByTier[safeTier]}-64.png`;
+}
+
 export default function Dashboard() {
   const [section, setSection] = useState<Section>('overview');
   const [status, setStatus] = useState<WebStatus | null>(null);
@@ -196,15 +207,37 @@ export default function Dashboard() {
   const [notifyPrefs, setNotifyPrefs] = useState<{
     permission: NotificationPermission | 'unsupported' | 'default';
   }>({ permission: 'default' });
+  const [notifyEnabled, setNotifyEnabled] = useState(false);
   const [historyPage, setHistoryPage] = useState(1);
   const [operationsPage, setOperationsPage] = useState(1);
 
   useEffect(() => {
-    if (typeof Notification !== 'undefined') {
-      setNotifyPrefs({ permission: Notification.permission });
-    } else {
-      setNotifyPrefs({ permission: 'unsupported' });
-    }
+    const syncNotificationState = () => {
+      if (typeof Notification !== 'undefined') {
+        setNotifyPrefs({ permission: Notification.permission });
+      } else {
+        setNotifyPrefs({ permission: 'unsupported' });
+      }
+
+      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+        setNotifyEnabled(localStorage.getItem('achievementNotifyJobs') === '1');
+      } else {
+        setNotifyEnabled(false);
+      }
+    };
+
+    syncNotificationState();
+    const interval = window.setInterval(syncNotificationState, 1200);
+    window.addEventListener('focus', syncNotificationState);
+    document.addEventListener('visibilitychange', syncNotificationState);
+    window.addEventListener('storage', syncNotificationState);
+
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', syncNotificationState);
+      document.removeEventListener('visibilitychange', syncNotificationState);
+      window.removeEventListener('storage', syncNotificationState);
+    };
   }, []);
   const ratePollBackoff = useRef(1);
   const jobStatusRef = useRef<{ id: string; status: WebJob['status'] } | null>(null);
@@ -556,6 +589,7 @@ export default function Dashboard() {
     rateLimit?.state === 'ok' ? 'ok' : rateLimit?.state === 'warning' ? 'warn' : 'error';
 
   const intro = PAGE_INTROS[section];
+  const visibleAchievements = achievements.filter((achievement) => achievement.automatable);
 
   return (
     <div className="appRoot">
@@ -738,11 +772,12 @@ export default function Dashboard() {
 
           {!loading && section === 'achievements' && (
             <div className="achievementGrid">
-              {achievements.map((achievement) => {
+              {visibleAchievements.map((achievement) => {
                 const tier = tierChoice[achievement.id] ?? initialTierChoiceForAchievement(achievement);
                 const feasibility = achievement.tierFeasibility.find((t) => t.level === tier);
                 const canFeas = feasibility?.canLikelyCompleteRun !== false;
                 const progress = achievement.progress;
+                const iconTier = progress?.tier ?? 'default';
                 const tierMismatch = Boolean(progress?.tier && tier && progress.tier !== tier);
                 const savedTierMeta = progress ? tierMetaForLevel(achievement.tiers, progress.tier) : null;
                 const localOutcome = localTierOutcome(progress);
@@ -756,8 +791,13 @@ export default function Dashboard() {
                     <header className="achievementCardHeader">
                       <div className="achievementCardHeaderMain">
                         <div className="achievementCardTitleRow">
-                          <span className="cardIcon" aria-hidden>
-                            {achievement.icon}
+                          <span className="cardIconWrap">
+                            <img
+                              className="cardBadgeImg"
+                              src={getBadgeImageUrl(achievement.id, iconTier)}
+                              alt={`${achievement.name} badge icon`}
+                              loading="lazy"
+                            />
                           </span>
                           <div>
                             <h2 className="cardTitle">{achievement.name}</h2>
@@ -1209,9 +1249,7 @@ export default function Dashboard() {
                 <p className="mutedText">
                   Permission:{' '}
                   <strong>{notifyPrefs.permission === 'unsupported' ? 'Not supported in this browser' : notifyPrefs.permission}</strong>
-                  {typeof window !== 'undefined' &&
-                    typeof localStorage !== 'undefined' &&
-                    localStorage.getItem('achievementNotifyJobs') === '1' && (
+                  {notifyEnabled && (
                     <span> · Enabled for completed/failed jobs</span>
                   )}
                 </p>
@@ -1226,6 +1264,7 @@ export default function Dashboard() {
                       setNotifyPrefs({ permission: perm });
                       if (perm === 'granted') {
                         localStorage.setItem('achievementNotifyJobs', '1');
+                        setNotifyEnabled(true);
                       }
                     }}
                   >
@@ -1236,6 +1275,7 @@ export default function Dashboard() {
                     className="linkBtn"
                     onClick={() => {
                       localStorage.removeItem('achievementNotifyJobs');
+                      setNotifyEnabled(false);
                       if (typeof Notification !== 'undefined') {
                         setNotifyPrefs({ permission: Notification.permission });
                       }

@@ -723,10 +723,25 @@ select {
   min-width: 0;
 }
 
-.cardIcon {
-  font-size: 2rem;
-  line-height: 1;
+.cardIconWrap {
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel-strong);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
   flex-shrink: 0;
+}
+
+.cardBadgeImg {
+  width: 50px;
+  height: 50px;
+  border-radius: 999px;
+  object-fit: cover;
+  display: block;
 }
 
 .cardTitle {
