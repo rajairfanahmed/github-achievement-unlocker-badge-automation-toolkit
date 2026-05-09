@@ -180,10 +180,18 @@ function getPageNumberWindow(currentPage: number, totalPages: number): Array<num
 }
 
 function getBadgeImageUrl(id: WebAchievement['id'], tier: TierLevel | undefined): string {
-  const providedDefaultIcons: Partial<Record<WebAchievement['id'], string>> = {
+  const alwaysStableIcons: Partial<Record<WebAchievement['id'], string>> = {
     'galaxy-brain': 'https://github.githubassets.com/assets/galaxy-brain-default-847262c21056.png',
     'pull-shark': 'https://github.githubassets.com/assets/pull-shark-default-498c279a747d.png',
     'pair-extraordinaire': 'https://github.githubassets.com/assets/pair-extraordinaire-default-579438a20e01.png',
+  };
+
+  // These three are forced to stable URLs (their tiered URLs are inconsistent across assets/CDN variants).
+  if (alwaysStableIcons[id]) {
+    return alwaysStableIcons[id];
+  }
+
+  const providedDefaultIcons: Partial<Record<WebAchievement['id'], string>> = {
     yolo: 'https://github.githubassets.com/assets/yolo-default-be0bbff04951.png',
     quickdraw: 'https://github.githubassets.com/assets/quickdraw-default-39c6aec8ff89.png',
     starstruck: 'https://github.githubassets.com/assets/starstruck-default--light-a594e2a027e0.png',
@@ -201,6 +209,25 @@ function getBadgeImageUrl(id: WebAchievement['id'], tier: TierLevel | undefined)
   };
 
   return `https://github.githubassets.com/images/modules/profile/achievements/${id}${suffixByTier[tier ?? 'default']}-64.png`;
+}
+
+function notificationBadgeModel(
+  permission: NotificationPermission | 'unsupported' | 'default',
+  enabled: boolean
+): { tone: 'ok' | 'warn' | 'error' | 'muted'; label: string } {
+  if (permission === 'unsupported') {
+    return { tone: 'muted', label: 'Not supported' };
+  }
+  if (permission === 'denied') {
+    return { tone: 'error', label: 'Blocked' };
+  }
+  if (permission === 'granted' && enabled) {
+    return { tone: 'ok', label: 'Enabled' };
+  }
+  if (permission === 'granted' && !enabled) {
+    return { tone: 'warn', label: 'Granted (off)' };
+  }
+  return { tone: 'muted', label: 'Not configured' };
 }
 
 export default function Dashboard() {
@@ -600,6 +627,7 @@ export default function Dashboard() {
 
   const rateTone: 'ok' | 'warn' | 'error' =
     rateLimit?.state === 'ok' ? 'ok' : rateLimit?.state === 'warning' ? 'warn' : 'error';
+  const notificationBadge = notificationBadgeModel(notifyPrefs.permission, notifyEnabled);
 
   const intro = PAGE_INTROS[section];
   const visibleAchievements = achievements.filter((achievement) => achievement.automatable);
@@ -1254,7 +1282,7 @@ export default function Dashboard() {
                     <h2 className="panelTitle">Desktop notifications</h2>
                     <p className="panelLead">Browser permission — optional.</p>
                   </div>
-                  <Badge tone="muted">Optional</Badge>
+                  <Badge tone={notificationBadge.tone}>{notificationBadge.label}</Badge>
                 </div>
                 <p className="mutedText">
                   Browser notifications when a job finishes—useful if you switch tabs while a long run is active.
