@@ -66,7 +66,7 @@ Tip: icon variant changes by tier (`default`, `bronze`, `silver`, `gold`) where 
 
 ## Setup guide
 
-All setup steps live here. Follow **Part 1 → Part 2 → Part 3 → Part 4**. Skip optional rows if you do not need that badge.
+All setup steps live here. Follow **Part 1 → Part 2 → Part 3 → Part 4**. Use every row that applies to the badges you are earning.
 
 ### At a glance
 
@@ -77,7 +77,7 @@ All setup steps live here. Follow **Part 1 → Part 2 → Part 3 → Part 4**. S
 | Classic PAT, scope **`repo`** | [github.com/settings/tokens](https://github.com/settings/tokens) |
 | **`TARGET_REPO`** | Format `owner/repo` — one repo where your main account can **write** |
 | **Helper** + **`HELPER_TOKEN`** | Only for **Galaxy Brain** & **YOLO** (must be a **different** login than main) |
-| **Discussions ON** | Only for **Galaxy Brain** — [see below](#optional-enable-discussions-galaxy-brain) |
+| **Discussions ON** | Required for **Galaxy Brain** — [see below](#enable-discussions-galaxy-brain) |
 
 **Public Sponsor:** subscribe on GitHub Sponsors yourself; this app only verifies afterward.
 
@@ -92,14 +92,14 @@ All setup steps live here. Follow **Part 1 → Part 2 → Part 3 → Part 4**. S
 | 3 | Set **`TARGET_REPO`** from the URL: `https://github.com/alice/my-repo` → `alice/my-repo` (never paste the full `https://` link). |
 | 4 | **`GITHUB_USERNAME`**: open avatar → **Your profile** → copy the name from the URL `github.com/your-username`. |
 
-**Optional — helper (Galaxy Brain / YOLO only)**
+**Helper account (Galaxy Brain / YOLO)**
 
 | # | Do this |
 | --- | --- |
 | 5 | Create or use a **second** GitHub user (**helper**). Not the same person as main. |
 | 6 | Target repo → **Settings** → **Collaborators** → add helper → **Write**. Helper must **accept** the invite. |
 
-#### Optional: enable Discussions (Galaxy Brain)
+#### Enable Discussions (Galaxy Brain)
 
 | # | Do this |
 | --- | --- |
@@ -119,7 +119,7 @@ Create at [github.com/settings/tokens](https://github.com/settings/tokens) → *
 | Variable | Who | Scopes |
 | --- | --- | --- |
 | `GITHUB_TOKEN` | Main | `repo` |
-| `HELPER_TOKEN` | Helper (if used) | `repo` + `write:discussion` for Galaxy Brain; YOLO needs at least `repo` on helper |
+| `HELPER_TOKEN` | Helper (Galaxy Brain / YOLO) | `repo` + `write:discussion` for Galaxy Brain; YOLO needs at least `repo` on helper |
 
 Never use one token for both accounts.
 
@@ -149,7 +149,7 @@ HELPER_TOKEN=ghp_your_helper_token
 | # | Step |
 | --- | --- |
 | 3 | CLI: `npm start` — if `dist/` is missing, run `npm run build` then `npm start` |
-| 4 | Dashboard (optional): `npm run web:dev` → [http://localhost:3000](http://localhost:3000) |
+| 4 | Dashboard: `npm run web:dev` → [http://localhost:3000](http://localhost:3000) |
 
 ---
 
