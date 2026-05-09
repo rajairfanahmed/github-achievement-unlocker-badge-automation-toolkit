@@ -22,6 +22,8 @@ This toolkit helps you:
 
 Dashboard is local-first. Token values stay on your machine.
 
+**New here?** Go straight to **[Setup guide](#setup-guide)** below.
+
 ## Credits and Project Lineage
 
 This work is based on and improved from the original project by `n0`:
@@ -62,245 +64,132 @@ This fork/version adds UX and operational improvements, such as:
 
 Tip: icon variant changes by tier (`default`, `bronze`, `silver`, `gold`) where GitHub provides tiered artwork.
 
-## Requirements
+## Setup guide
 
-- Node.js `18+`
-- npm
-- GitHub Personal Access Token (classic) with **`repo`** scope for your **main** account
-- A **target repository** where the main account has **write** access (most workflows create branches, PRs, issues, or merges here)
-- For **Galaxy Brain** and **YOLO**: a **second GitHub account** plus `HELPER_TOKEN`, and for Galaxy Brain **repository Discussions must be enabled** on `TARGET_REPO`
-- For **Public Sponsor**: payment/sponsorship happens outside the app; the tool verifies state via the API (ensure your token can read the relevant data—use the dashboard **Overview** if something is blocked)
+All setup steps live here. Follow **Part 1 → Part 2 → Part 3 → Part 4**. Skip optional rows if you do not need that badge.
 
-## Complete beginner path (step by step, one flow)
+### At a glance
 
-Read from top to bottom like a recipe. **Do the steps in order.** If a step says “only for Galaxy Brain,” you can skip it when you do not want that badge—but it is safe to turn Discussions on anyway.
+| Need | Details |
+| --- | --- |
+| Node.js **18+**, **npm** | |
+| **Main** GitHub account | Profile that should earn badges |
+| Classic PAT, scope **`repo`** | [github.com/settings/tokens](https://github.com/settings/tokens) |
+| **`TARGET_REPO`** | Format `owner/repo` — one repo where your main account can **write** |
+| **Helper** + **`HELPER_TOKEN`** | Only for **Galaxy Brain** & **YOLO** (must be a **different** login than main) |
+| **Discussions ON** | Only for **Galaxy Brain** — [see below](#optional-enable-discussions-galaxy-brain) |
 
-**1.** Open [https://github.com](https://github.com) and sign in with the account that should **earn the badges** on the profile. This is your **main account**.
-
-**2.** Decide which repository the tool will use. It can be an old repo or a brand new empty one. Everywhere below we call this your **target repo**. In your mind, remember: “all the automatic issues, PRs, and so on happen **inside this one repo**.”
-
-**3.** If you do not have a target repo yet, create it now:
-   - Click the **+** button at the top right of GitHub.
-   - Click **New repository**.
-   - Choose any name you like (for example `my-achievements-playground`).
-   - You can leave it **public** or **private**; your main account must be able to **write** to it (owner is fine).
-   - Click **Create repository**.
-
-**4.** Copy the repo name in the `owner/repo` form. Open the repo in the browser. Look at the address bar.
-   - Example address: `https://github.com/alice/hello-world`
-   - The value you need is: `alice/hello-world`
-   - You will put that in `.env` as `TARGET_REPO` later.
-
-**5.** *(Only if you plan to earn **Galaxy Brain**.)* Galaxy Brain needs a **Discussions** area on that **same** target repo. Think of Discussions like a forum tab on the repo. Turn it on **before** you run the tool:
-   - **5a.** Make sure you are still logged in as someone who **owns** the repo or has **admin** rights (usually the repo owner).
-   - **5b.** Open your target repo’s home page (the page with **Code**, **Issues**, **Pull requests**).
-   - **5c.** Click **Settings** near the top of the repo page. (This is **repository** Settings, not your profile picture Settings for the whole GitHub account.)
-   - **5d.** In the **left** menu, click **General** if it is not already selected.
-   - **5e.** Scroll down the main page until you see a block named **Features**.
-   - **5f.** Find the line that says **Discussions**.
-   - **5g.** Click the switch so Discussions is **On** (enabled).
-   - **5h.** Click your repository name at the top (or use the browser Back button) to return to the **normal repo home page** (not Settings).
-   - **5i.** Look at the tabs: you should now see **Discussions** next to **Issues** and **Pull requests**. If you do **not** see it, go back to **Settings → General → Features** and make sure the switch is really on.
-   - **5j.** *(Nice to have.)* Click the **Discussions** tab. If GitHub asks you to set up categories, pick or keep a **Q&A** style category so questions and “accepted answers” work the way GitHub expects. You do not need to be perfect here; you mainly need Discussions **on** and a normal place to post.
-
-If you skip step 5 and later run Galaxy Brain, the dashboard will say Discussions are missing until you complete 5a–5i.
-
-**6.** *(Only if you plan **Galaxy Brain** or **YOLO**.)* You need a **second** GitHub account (the **helper**). It must **not** be the same login as the main account.
-
-**7.** *(Only with a helper.)* Invite the helper to the **target repo**:
-   - Open the target repo → **Settings** → **Collaborators** (sometimes labeled **Collaborators and teams**).
-   - **Add people** with the helper’s GitHub username and give at least **Write** access so they can work with PRs and discussions.
-   - The helper must **accept** the invitation (email or GitHub notification). Wait until that is done.
-
-**8.** Create a **classic** token for the **main** account: [https://github.com/settings/tokens](https://github.com/settings/tokens) → **Generate new token (classic)** → enable scope **`repo`** → generate → copy the token once (GitHub will not show it again). That string is your `GITHUB_TOKEN`.
-
-**9.** *(Only with a helper.)* While logged into the **helper** account, create another classic token with scopes **`repo`** and **`write:discussion`** (needed for Galaxy Brain–style discussion work). That string is your `HELPER_TOKEN`.
-
-**10.** On your **computer**, clone this project and enter the folder:
-
-```bash
-git clone <your-repo-url>
-cd GitHub-Achievement-CLI
-```
-
-**11.** Install dependencies. The first install also creates `.env` from `.env.example` if needed, and runs a build:
-
-```bash
-npm install
-```
-
-**12.** Open the file **`.env`** in the project folder (same level as `package.json`). Fill at least:
-
-```env
-GITHUB_TOKEN=paste_main_token_here
-GITHUB_USERNAME=your-main-username
-TARGET_REPO=owner/repo-from-step-4
-```
-
-If you use a helper, add one more line:
-
-```env
-HELPER_TOKEN=paste_helper_token_here
-```
-
-**13.** Start the CLI:
-
-```bash
-npm start
-```
-
-If `dist/` is missing because you skipped install scripts, run `npm run build` then `npm start` again.
-
-**14.** *(Optional but recommended.)* Start the local dashboard:
-
-```bash
-npm run web:dev
-```
-
-Open [http://localhost:3000](http://localhost:3000). Use **Overview** first (checks env, repo, Discussions if needed, rate limit). Use **Achievements** to run one badge at a time (**only one job** runs at once). **Stop run** stops politely after the current API call. **History** shows what happened; **Settings** shows env summary without secrets.
+**Public Sponsor:** subscribe on GitHub Sponsors yourself; this app only verifies afterward.
 
 ---
 
-**Tiny cheat sheet**
+### Part 1 — GitHub (account, repo, helper)
 
-| You want | Do not skip |
+| # | Do this |
 | --- | --- |
-| Most badges | Steps 1–4, 8, 10–13 |
-| Galaxy Brain | Step 5 (Discussions), steps 6–7, helper token in step 9 |
-| YOLO | Steps 6–7, helper token (scope `repo` at minimum) |
+| 1 | Sign in at [github.com](https://github.com) as the account that should **get the badges** (**main**). |
+| 2 | Pick **one** repo for all automation, or create it: **+** → **New repository** → **Create** (any name; you need **write** access). |
+| 3 | Set **`TARGET_REPO`** from the URL: `https://github.com/alice/my-repo` → `alice/my-repo` (never paste the full `https://` link). |
+| 4 | **`GITHUB_USERNAME`**: open avatar → **Your profile** → copy the name from the URL `github.com/your-username`. |
 
-## Complete `.env` Setup Guide (Very Beginner Friendly)
+**Optional — helper (Galaxy Brain / YOLO only)**
 
-If you can't understand where to find `token`, `username`, and `target repo`, use this section exactly.
+| # | Do this |
+| --- | --- |
+| 5 | Create or use a **second** GitHub user (**helper**). Not the same person as main. |
+| 6 | Target repo → **Settings** → **Collaborators** → add helper → **Write**. Helper must **accept** the invite. |
 
-### Step A - Find your GitHub username
+#### Optional: enable Discussions (Galaxy Brain)
 
-1. Open `https://github.com` and sign in.
-2. Click your profile photo (top-right).
-3. Click **Your profile**.
-4. Your username is in the URL:
-   - Example URL: `https://github.com/your-username`
-   - Username: `your-username`
-5. Put this in `.env`:
+| # | Do this |
+| --- | --- |
+| A | Open the **repository** as owner or admin (repo **Settings**, not account Settings). |
+| B | **General** → **Features** → turn **Discussions** **On**. |
+| C | Back on the repo home, confirm a **Discussions** tab appears. |
+| D | Open **Discussions**; pick a **Q&A** category if GitHub asks — helps “accepted answer” work. |
 
-```env
-GITHUB_USERNAME=your-username
-```
+Without B–C, Galaxy Brain stays blocked in the dashboard.
 
-### Step B - Create `GITHUB_TOKEN` (main account token)
+---
 
-This token must belong to the same account that should receive achievements.
+### Part 2 — Tokens
 
-1. While signed in to your main GitHub account, open:
-   - `https://github.com/settings/tokens`
-2. Click **Generate new token (classic)**.
-3. Add a note (example: `Achievement Toolkit Main Token`).
-4. Select expiry as you prefer.
-5. Select scope:
-   - `repo` (required)
-6. Click **Generate token**.
-7. Copy token immediately (GitHub will not show it again).
-8. Put this in `.env`:
+Create at [github.com/settings/tokens](https://github.com/settings/tokens) → **Generate new token (classic)**. Copy once; GitHub will not show it again.
 
-```env
-GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
+| Variable | Who | Scopes |
+| --- | --- | --- |
+| `GITHUB_TOKEN` | Main | `repo` |
+| `HELPER_TOKEN` | Helper (if used) | `repo` + `write:discussion` for Galaxy Brain; YOLO needs at least `repo` on helper |
 
-### Step C - Find/create your `TARGET_REPO`
+Never use one token for both accounts.
 
-`TARGET_REPO` format is always:
+---
 
-```text
-owner/repository-name
-```
+### Part 3 — Install, `.env`, run
 
-How to find it:
-1. Open your repository in browser.
-2. Look at URL:
-   - Example: `https://github.com/your-username/your-repository-name`
-3. Then:
+| # | Step |
+| --- | --- |
+| 1 | `git clone <your-repo-url>` and `cd GitHub-Achievement-CLI` |
+| 2 | `npm install` — copies `.env` from `.env.example` if missing; runs build via `prepare` |
+
+Edit **`.env`** (next to `package.json`):
 
 ```env
-TARGET_REPO=your-username/your-repository-name
-```
-
-If you do not have a repo yet:
-1. Click `+` on GitHub top-right -> **New repository**
-2. Create any test repo under your account
-3. Use that repo path as `TARGET_REPO`
-
-### Step D - Helper Token (`HELPER_TOKEN`)
-
-Required only for helper-based badges (Galaxy Brain / YOLO).
-
-1. Login with a **second GitHub account** (not the main one).
-2. Open `https://github.com/settings/tokens`
-3. Generate classic token with:
-   - `repo`
-   - `write:discussion` (recommended for **Galaxy Brain** so discussions can be created/participated in as documented in `.env.example`)
-4. Put in `.env`:
-
-```env
-HELPER_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-Important:
-- `GITHUB_TOKEN` and `HELPER_TOKEN` must be from different accounts.
-- Helper account should have collaborator access to the target repo.
-
-### Step D2 - Invite the helper account to `TARGET_REPO`
-
-1. Repo **Settings → Collaborators and teams → Add people**.
-2. Invite the helper’s GitHub username with **Write** access (or sufficient access to collaborate on PRs/discussions).
-3. The helper must **accept** the email/notification invite before workflows can run reliably.
-
-### Step E - Final `.env` example
-
-```env
-GITHUB_TOKEN=ghp_main_account_token_here
+GITHUB_TOKEN=ghp_your_main_token
 GITHUB_USERNAME=your-main-username
-TARGET_REPO=your-main-username/your-target-repo
-HELPER_TOKEN=ghp_helper_account_token_here
+TARGET_REPO=owner/repo
 ```
 
-### Quick validation checklist
-
-Before running, confirm:
-- `GITHUB_USERNAME` matches the owner of `GITHUB_TOKEN`
-- `TARGET_REPO` exists and you can open it in browser
-- Main account has write access to `TARGET_REPO`
-- For **Galaxy Brain**: Discussions are enabled on `TARGET_REPO` (see **Complete beginner path**, steps 5a–5i), helper collaborator invite accepted
-- `.env` is in project root (same folder as `package.json`)
-
-Progress files: the app saves local state to **`achievements-data-<username>.json`** in the project folder (already gitignored)—this is separate from GitHub’s own profile badges.
-
-### Common copy mistakes (very common)
-
-- Wrong format:
-  - `TARGET_REPO=https://github.com/user/repo` ❌
-  - `TARGET_REPO=user/repo` ✅
-- Adding quotes around token:
-  - `GITHUB_TOKEN="ghp_xxx"` (usually avoid quotes)
-- Using same account token for helper and main
-- Typo in username or repo name
-
-## Main Account vs Helper Account
-
-Use two different accounts for helper-required badges.
-
-Example:
+If you use a helper:
 
 ```env
-GITHUB_TOKEN=token_for_account_getting_badges
-HELPER_TOKEN=token_for_second_account
+HELPER_TOKEN=ghp_your_helper_token
 ```
 
-Do not set both to the same account.
+| # | Step |
+| --- | --- |
+| 3 | CLI: `npm start` — if `dist/` is missing, run `npm run build` then `npm start` |
+| 4 | Dashboard (optional): `npm run web:dev` → [http://localhost:3000](http://localhost:3000) |
+
+---
+
+### Part 4 — Using the dashboard
+
+| Tab | Purpose |
+| --- | --- |
+| **Overview** | Checks env, repo, Discussions if needed, rate limit |
+| **Achievements** | Choose tier → **Run** / **Resume** — **one global job at a time** |
+| **History** | What ran locally + GitHub links |
+| **Settings** | Env summary (no secrets), notifications |
+
+**Stop run** finishes the current API call, then stops.
+
+---
+
+### Before you run (checklist)
+
+- [ ] `GITHUB_USERNAME` matches the user that owns `GITHUB_TOKEN`
+- [ ] `TARGET_REPO` is only `owner/repo`
+- [ ] You can open that repo in the browser and your main user can write to it
+- [ ] Galaxy Brain: Discussions on + helper invited and accepted + `HELPER_TOKEN`
+- [ ] `.env` is in the project root with `package.json`
+
+Progress file: **`achievements-data-<username>.json`** (gitignored), separate from GitHub’s badges.
+
+### Common mistakes
+
+| Wrong | Right |
+| --- | --- |
+| `TARGET_REPO=https://github.com/u/r` | `TARGET_REPO=u/r` |
+| Same token for main and helper | Two accounts, two tokens |
+| `GITHUB_TOKEN="ghp_..."` with quotes | Usually no quotes |
 
 ## CLI + Dashboard Overview
 
-- **CLI** (`npm start`): Ink UI for interactive setup, run achievements, view status/history helpers, repo reset tooling as implemented in the CLI
-- **Dashboard** (`npm run web:dev`): Overview preflight + **Achievements** runner cards + paginated History + Settings (notifications sync); sticky job panel + **Stop run**
+| Mode | Command | What you get |
+| --- | --- | --- |
+| CLI | `npm start` | Ink menus: setup, run achievements, status/history, repo helpers |
+| Dashboard | `npm run web:dev` | Overview, Achievements, History, Settings; job bar + **Stop run** |
 
 ## Rate Limit and Safety
 
