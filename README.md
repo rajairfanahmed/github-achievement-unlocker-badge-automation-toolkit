@@ -5,7 +5,7 @@ Automate and manage GitHub profile achievement workflows with a CLI + local web 
 If you searched for phrases like:
 - GitHub achievement unlocker
 - GitHub badge automation tool
-- earn pull shark quickdraw galaxy brain
+- Earn pull shark quickdraw galaxy brain
 - GitHub achievements script
 - GitHub profile badges automation
 
