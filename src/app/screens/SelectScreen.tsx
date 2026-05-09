@@ -31,8 +31,8 @@ export const SelectScreen: React.FC<SelectScreenProps> = ({
   const [tierQueue, setTierQueue] = useState<AchievementId[]>([]);
 
   // Build achievement list based on available features
-  const availableAchievements = Object.entries(achievements).filter(([id, achievement]) => {
-    // Filter based on requirements
+  const availableAchievements = Object.entries(achievements).filter(([, achievement]) => {
+    if (!achievement.automatable) return false;
     if (achievement.requiresHelper && !hasHelper) return false;
     if (achievement.requiresDiscussions && !hasDiscussions) return false;
     return true;

@@ -10,10 +10,15 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "tsx src/index.tsx",
+    "dev": "node node_modules/next/dist/bin/next dev web --webpack -p 3000",
+    "dev:cli": "tsx src/index.tsx",
+    "web:dev": "node node_modules/next/dist/bin/next dev web --webpack -p 3000",
+    "web:build": "node node_modules/next/dist/bin/next build web --webpack",
+    "web:start": "node node_modules/next/dist/bin/next start web -p 3000",
     "clean": "rm -rf dist logs achievements.db",
     "lint": "tsc --noEmit",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "postinstall": "node scripts/create-env.mjs"
   },
   "keywords": [
     "github",
@@ -31,18 +36,24 @@
   },
   "dependencies": {
     "@octokit/rest": "^20.0.2",
+    "@types/react-dom": "19.2.3",
     "dotenv": "^16.3.1",
     "figures": "^6.0.1",
-    "ink": "^4.4.1",
-    "ink-select-input": "^5.0.0",
-    "ink-spinner": "^5.0.0",
-    "ink-text-input": "^5.0.0",
-    "react": "^18.2.0"
+    "ink": "7.0.2",
+    "ink-select-input": "6.2.0",
+    "ink-spinner": "5.0.0",
+    "ink-text-input": "6.0.0",
+    "next": "16.2.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
   },
   "devDependencies": {
     "@types/node": "^20.10.5",
-    "@types/react": "^18.2.45",
+    "@types/react": "19.2.14",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
+  },
+  "overrides": {
+    "postcss": "8.5.13"
   }
 }

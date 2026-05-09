@@ -33,6 +33,9 @@ export class GitHubClient {
       request: {
         timeout: 30000,
       },
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
     });
   }
 
@@ -200,6 +203,7 @@ export class GitHubClient {
         fullName: response.data.full_name,
         defaultBranch: response.data.default_branch,
         hasDiscussions: response.data.has_discussions || false,
+        stargazersCount: response.data.stargazers_count,
         permissions: {
           push: response.data.permissions?.push || false,
           pull: response.data.permissions?.pull || false,
@@ -292,6 +296,18 @@ export class GitHubClient {
   }
 
   /**
+   * Whether the authenticated user has starred the repository
+   */
+  async isRepoStarredByAuthenticatedUser(owner: string, repo: string): Promise<boolean> {
+    try {
+      await this.octokit.activity.checkRepoIsStarredByAuthenticatedUser({ owner, repo });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Star a repository
    */
   async starRepo(owner: string, repo: string): Promise<boolean> {
@@ -302,6 +318,45 @@ export class GitHubClient {
       logger.debug(`Failed to star repo: ${error}`);
       return false;
     }
+  }
+
+  /**
+   * GraphQL query (Sponsors, etc.). Returns null if the request fails (e.g. missing scope).
+   */
+  async graphqlQuery<T>(query: string): Promise<T | null> {
+    try {
+      const response = await fetch('https://api.github.com/graphql', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.config.githubToken}`,
+          'Content-Type': 'application/json',
+          'User-Agent': 'github-achievements-manager/1.0.0',
+        },
+        body: JSON.stringify({ query }),
+      });
+      const body = (await response.json()) as { data?: T; errors?: Array<{ message: string }> };
+      if (!response.ok || body.errors?.length) {
+        logger.debug(`GraphQL error: ${response.status} ${JSON.stringify(body.errors)}`);
+        return null;
+      }
+      return body.data ?? null;
+    } catch (error) {
+      logger.debug(`GraphQL request failed: ${error}`);
+      return null;
+    }
+  }
+
+  /**
+   * Count of sponsorships created by the viewer (Public Sponsor achievement).
+   */
+  async getSponsorshipsAsSponsorCount(): Promise<number | null> {
+    const query = `query { viewer { sponsorshipsAsSponsor(first: 1) { totalCount } } }`;
+    type Q = { viewer: { sponsorshipsAsSponsor: { totalCount: number } | null } };
+    const data = await this.graphqlQuery<Q>(query);
+    if (!data?.viewer?.sponsorshipsAsSponsor) {
+      return null;
+    }
+    return data.viewer.sponsorshipsAsSponsor.totalCount;
   }
 
   /**

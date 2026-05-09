@@ -75,6 +75,12 @@ export function achievementIdToDisplayName(id: AchievementId): string {
     'quickdraw': 'Quickdraw',
     'galaxy-brain': 'Galaxy Brain',
     'yolo': 'YOLO',
+    'starstruck': 'Starstruck',
+    'public-sponsor': 'Public Sponsor',
+    'heart-on-your-sleeve': 'Heart On Your Sleeve',
+    'open-sourcerer': 'Open Sourcerer',
+    'arctic-code-vault-contributor': 'Arctic Code Vault Contributor',
+    'mars-2020-contributor': 'Mars 2020 Contributor',
   };
   return names[id] || id;
 }

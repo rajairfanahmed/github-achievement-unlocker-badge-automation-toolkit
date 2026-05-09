@@ -162,11 +162,24 @@ export async function createAndMergePR(
     await delay(options.delayBeforeMerge);
   }
 
-  // Merge the PR
+  // Merge the PR. GitHub can briefly report a new PR as not mergeable while
+  // it calculates mergeability or after another automated PR updates the base.
   try {
-    await mergePR(owner, repo, pr.number, {
-      method: options.mergeMethod || 'squash',
-    });
+    const maxAttempts = 5;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        await mergePR(owner, repo, pr.number, {
+          method: options.mergeMethod || 'squash',
+        });
+        break;
+      } catch (error) {
+        if (error instanceof MergeConflictError && attempt < maxAttempts) {
+          await delay(1000 * attempt);
+          continue;
+        }
+        throw error;
+      }
+    }
 
     // Update PR info
     return {

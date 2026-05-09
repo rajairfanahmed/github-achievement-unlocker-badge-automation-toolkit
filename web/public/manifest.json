@@ -1,0 +1,10 @@
+{
+  "name": "GitHub Achievement Manager",
+  "short_name": "GH Achievements",
+  "description": "Local dashboard for GitHub profile achievement workflows",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f3ec",
+  "theme_color": "#0d9488",
+  "icons": []
+}

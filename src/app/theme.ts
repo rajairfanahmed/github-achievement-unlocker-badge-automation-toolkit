@@ -28,6 +28,12 @@ export const icons = {
   'galaxy-brain': '🧠',
   'quickdraw': '🤠',
   'yolo': '🎲',
+  'starstruck': '🌟',
+  'public-sponsor': '💝',
+  'heart-on-your-sleeve': '❤️',
+  'open-sourcerer': '🧙',
+  'arctic-code-vault-contributor': '🧊',
+  'mars-2020-contributor': '🚀',
 } as const;
 
 // Status symbols
@@ -58,13 +64,19 @@ export const tierNames = {
   gold: 'Gold',
 } as const;
 
-// Achievement tier requirements
+// Achievement tier requirements (target counts / operations)
 export const tierCounts = {
   'pair-extraordinaire': { default: 1, bronze: 10, silver: 24, gold: 48 },
   'pull-shark': { default: 2, bronze: 16, silver: 128, gold: 1024 },
   'galaxy-brain': { default: 2, bronze: 8, silver: 16, gold: 32 },
-  'quickdraw': { default: 1, bronze: 1, silver: 1, gold: 1 }, // Single tier
-  'yolo': { default: 1, bronze: 1, silver: 1, gold: 1 }, // Single tier
+  'quickdraw': { default: 1, bronze: 1, silver: 1, gold: 1 },
+  'yolo': { default: 1, bronze: 1, silver: 1, gold: 1 },
+  'starstruck': { default: 16, bronze: 128, silver: 512, gold: 4096 },
+  'public-sponsor': { default: 1, bronze: 1, silver: 1, gold: 1 },
+  'heart-on-your-sleeve': { default: 1, bronze: 1, silver: 1, gold: 1 },
+  'open-sourcerer': { default: 1, bronze: 1, silver: 1, gold: 1 },
+  'arctic-code-vault-contributor': { default: 1, bronze: 1, silver: 1, gold: 1 },
+  'mars-2020-contributor': { default: 1, bronze: 1, silver: 1, gold: 1 },
 } as const;
 
 // Achievement metadata
@@ -76,6 +88,7 @@ export const achievements = {
     tiers: ['default', 'bronze', 'silver', 'gold'] as const,
     requiresHelper: false,
     requiresDiscussions: false,
+    automatable: true,
   },
   'pull-shark': {
     name: 'Pull Shark',
@@ -84,6 +97,7 @@ export const achievements = {
     tiers: ['default', 'bronze', 'silver', 'gold'] as const,
     requiresHelper: false,
     requiresDiscussions: false,
+    automatable: true,
   },
   'galaxy-brain': {
     name: 'Galaxy Brain',
@@ -92,6 +106,7 @@ export const achievements = {
     tiers: ['default', 'bronze', 'silver', 'gold'] as const,
     requiresHelper: true,
     requiresDiscussions: true,
+    automatable: true,
   },
   'quickdraw': {
     name: 'Quickdraw',
@@ -100,6 +115,7 @@ export const achievements = {
     tiers: ['default'] as const,
     requiresHelper: false,
     requiresDiscussions: false,
+    automatable: true,
   },
   'yolo': {
     name: 'YOLO',
@@ -108,6 +124,61 @@ export const achievements = {
     tiers: ['default'] as const,
     requiresHelper: true,
     requiresDiscussions: false,
+    automatable: true,
+  },
+  'starstruck': {
+    name: 'Starstruck',
+    description: 'Stars on target repo — polls GitHub stargazer count',
+    icon: '🌟',
+    tiers: ['default', 'bronze', 'silver', 'gold'] as const,
+    requiresHelper: false,
+    requiresDiscussions: false,
+    automatable: true,
+  },
+  'public-sponsor': {
+    name: 'Public Sponsor',
+    description: 'Verify public sponsorship after subscribing on GitHub Sponsors',
+    icon: '💝',
+    tiers: ['default'] as const,
+    requiresHelper: false,
+    requiresDiscussions: false,
+    automatable: true,
+  },
+  'heart-on-your-sleeve': {
+    name: 'Heart On Your Sleeve',
+    description: 'Planned — GitHub rules still in flux',
+    icon: '❤️',
+    tiers: ['default'] as const,
+    requiresHelper: false,
+    requiresDiscussions: false,
+    automatable: false,
+  },
+  'open-sourcerer': {
+    name: 'Open Sourcerer',
+    description: 'Planned — GitHub rules still in flux',
+    icon: '🧙',
+    tiers: ['default'] as const,
+    requiresHelper: false,
+    requiresDiscussions: false,
+    automatable: false,
+  },
+  'arctic-code-vault-contributor': {
+    name: 'Arctic Code Vault Contributor',
+    description: 'Historical — no longer earnable',
+    icon: '🧊',
+    tiers: ['default'] as const,
+    requiresHelper: false,
+    requiresDiscussions: false,
+    automatable: false,
+  },
+  'mars-2020-contributor': {
+    name: 'Mars 2020 Contributor',
+    description: 'Historical — no longer earnable',
+    icon: '🚀',
+    tiers: ['default'] as const,
+    requiresHelper: false,
+    requiresDiscussions: false,
+    automatable: false,
   },
 } as const;
 

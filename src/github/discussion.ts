@@ -453,6 +453,13 @@ export async function areDiscussionsEnabled(
   repo: string
 ): Promise<boolean> {
   try {
+    const repoInfo = await getGitHubClient().getRepository(owner, repo);
+    return repoInfo.hasDiscussions;
+  } catch (error) {
+    logger.debug(`Could not read repository Discussions flag: ${error}`);
+  }
+
+  try {
     await getDiscussionCategories(owner, repo);
     return true;
   } catch (error) {

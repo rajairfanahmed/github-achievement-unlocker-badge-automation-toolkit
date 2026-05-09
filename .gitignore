@@ -3,6 +3,8 @@ node_modules/
 
 # Build output
 dist/
+.next/
+web/.next/
 
 # Environment variables (CRITICAL: never commit tokens)
 .env
@@ -40,6 +42,7 @@ temp/
 
 # Local data (per-account database files)
 achievements-data*.json
+.achievement-web-jobs.json
 
 # Language preference
 .language

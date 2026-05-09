@@ -9,6 +9,8 @@ import { PullSharkAchievement } from './pullShark.js';
 import { QuickdrawAchievement } from './quickdraw.js';
 import { GalaxyBrainAchievement } from './galaxyBrain.js';
 import { YOLOAchievement } from './yolo.js';
+import { StarstruckAchievement } from './starstruck.js';
+import { PublicSponsorAchievement } from './publicSponsor.js';
 
 // Achievement definitions
 export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
@@ -24,6 +26,9 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
       { level: 'gold', targetCount: 48, displayName: 'Gold' },
     ],
     estimatedTimePerUnit: 3000,
+    estimatedRestCallsPerOperation: 5,
+    automatable: true,
+    docsUrl: 'https://github.com/orgs/community/discussions/categories/profile',
   },
   {
     id: 'pull-shark',
@@ -37,6 +42,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
       { level: 'gold', targetCount: 1024, displayName: 'Gold' },
     ],
     estimatedTimePerUnit: 5000,
+    estimatedRestCallsPerOperation: 5,
+    automatable: true,
   },
   {
     id: 'galaxy-brain',
@@ -50,6 +57,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
       { level: 'gold', targetCount: 32, displayName: 'Gold' },
     ],
     estimatedTimePerUnit: 4000,
+    estimatedRestCallsPerOperation: 8,
+    automatable: true,
   },
   {
     id: 'quickdraw',
@@ -60,6 +69,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
       { level: 'default', targetCount: 1, displayName: 'Default' },
     ],
     estimatedTimePerUnit: 2000,
+    estimatedRestCallsPerOperation: 5,
+    automatable: true,
   },
   {
     id: 'yolo',
@@ -70,6 +81,85 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
       { level: 'default', targetCount: 1, displayName: 'Default' },
     ],
     estimatedTimePerUnit: 5000,
+    estimatedRestCallsPerOperation: 5,
+    automatable: true,
+  },
+  {
+    id: 'starstruck',
+    name: 'Starstruck',
+    description: 'Stars on the target repository — tool polls count and stars as main/helper',
+    icon: '🌟',
+    tiers: [
+      { level: 'default', targetCount: 16, displayName: 'Default' },
+      { level: 'bronze', targetCount: 128, displayName: 'Bronze' },
+      { level: 'silver', targetCount: 512, displayName: 'Silver' },
+      { level: 'gold', targetCount: 4096, displayName: 'Gold' },
+    ],
+    estimatedTimePerUnit: 15_000,
+    estimatedRestCallsPerOperation: 3,
+    automatable: true,
+  },
+  {
+    id: 'public-sponsor',
+    name: 'Public Sponsor',
+    description: 'Public GitHub Sponsorship — sponsor on github.com/sponsors, then verify here',
+    icon: '💝',
+    tiers: [
+      { level: 'default', targetCount: 1, displayName: 'Default' },
+    ],
+    estimatedTimePerUnit: 60_000,
+    estimatedRestCallsPerOperation: 4,
+    automatable: true,
+    docsUrl: 'https://github.com/sponsors',
+    requiresRepoWrite: false,
+  },
+  {
+    id: 'heart-on-your-sleeve',
+    name: 'Heart On Your Sleeve',
+    description: 'Beta / rules may change — automation not wired yet',
+    icon: '❤️',
+    tiers: [
+      { level: 'default', targetCount: 1, displayName: 'Default' },
+    ],
+    estimatedTimePerUnit: 1000,
+    estimatedRestCallsPerOperation: 1,
+    automatable: false,
+  },
+  {
+    id: 'open-sourcerer',
+    name: 'Open Sourcerer',
+    description: 'Beta / rules may change — automation not wired yet',
+    icon: '🧙',
+    tiers: [
+      { level: 'default', targetCount: 1, displayName: 'Default' },
+    ],
+    estimatedTimePerUnit: 1000,
+    estimatedRestCallsPerOperation: 1,
+    automatable: false,
+  },
+  {
+    id: 'arctic-code-vault-contributor',
+    name: 'Arctic Code Vault Contributor',
+    description: 'Historical GitHub Archive Program — no longer earnable',
+    icon: '🧊',
+    tiers: [
+      { level: 'default', targetCount: 1, displayName: 'Historical' },
+    ],
+    estimatedTimePerUnit: 0,
+    estimatedRestCallsPerOperation: 0,
+    automatable: false,
+  },
+  {
+    id: 'mars-2020-contributor',
+    name: 'Mars 2020 Contributor',
+    description: 'Historical Mars 2020 mission repos — no longer earnable',
+    icon: '🚀',
+    tiers: [
+      { level: 'default', targetCount: 1, displayName: 'Historical' },
+    ],
+    estimatedTimePerUnit: 0,
+    estimatedRestCallsPerOperation: 0,
+    automatable: false,
   },
 ];
 
@@ -84,6 +174,8 @@ export {
   QuickdrawAchievement,
   GalaxyBrainAchievement,
   YOLOAchievement,
+  StarstruckAchievement,
+  PublicSponsorAchievement,
 };
 
 /**
@@ -95,6 +187,11 @@ export function createAchievement(
   tier: TierLevel,
   targetCount: number
 ): BaseAchievement {
+  const definition = getAchievementDefinition(achievementId);
+  if (!definition?.automatable) {
+    throw new Error(`Achievement "${achievementId}" is not runnable — automation is disabled or unavailable.`);
+  }
+
   switch (achievementId) {
     case 'pair-extraordinaire':
       return new PairExtraordinaireAchievement(config, tier, targetCount);
@@ -110,6 +207,12 @@ export function createAchievement(
 
     case 'yolo':
       return new YOLOAchievement(config, tier, targetCount);
+
+    case 'starstruck':
+      return new StarstruckAchievement(config, tier, targetCount);
+
+    case 'public-sponsor':
+      return new PublicSponsorAchievement(config, tier, targetCount);
 
     default:
       throw new Error(`Unknown achievement: ${achievementId}`);

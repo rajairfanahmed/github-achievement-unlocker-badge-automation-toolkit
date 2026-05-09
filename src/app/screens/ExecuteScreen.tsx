@@ -181,7 +181,10 @@ export const ExecuteScreen: React.FC<ExecuteScreenProps> = ({
   };
 
   const totalOps = selections.reduce((sum, s) => sum + s.count, 0);
-  const completedOps = Array.from(progress.values()).reduce((sum, p) => sum + p.current, 0);
+  const completedOps = Array.from(progress.values()).reduce(
+    (sum, p) => sum + Math.min(Math.max(p.current, 0), p.total),
+    0
+  );
   const successCount = Array.from(progress.values()).filter((p) => p.status === 'completed').length;
   const failedCount = Array.from(progress.values()).filter((p) => p.status === 'failed').length;
 

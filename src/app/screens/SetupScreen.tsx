@@ -249,7 +249,12 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({ onComplete }) => {
       // Star on helper account if available
       if (helperToken.trim()) {
         const { Octokit } = await import('@octokit/rest');
-        const helperOctokit = new Octokit({ auth: helperToken.trim() });
+        const helperOctokit = new Octokit({
+          auth: helperToken.trim(),
+          headers: {
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
+        });
         try {
           await helperOctokit.activity.starRepoForAuthenticatedUser({
             owner: 'n0',

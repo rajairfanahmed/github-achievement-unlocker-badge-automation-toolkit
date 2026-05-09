@@ -112,9 +112,11 @@ export abstract class BaseAchievement {
       logger.info(`Reset ${resetCount} stuck operations from previous run`);
     }
 
-    // Get set of already completed operation numbers
+    // Get set of already completed operation numbers. Operation numbers are only
+    // local bookkeeping, so resume by completed count and create fresh operation
+    // numbers for the remaining work instead of retrying old failed branches.
     const completedOperations = getCompletedOperationNumbers(this.achievementId);
-    let completed = completedOperations.size;
+    let completed = Math.min(completedOperations.size, this.targetCount);
 
     const concurrency = this.config.concurrency || 3;
     logger.info(`Starting ${this.achievementName} (${this.tier}) - ${this.targetCount} operations (concurrency: ${concurrency})`);
@@ -124,12 +126,32 @@ export abstract class BaseAchievement {
     }
 
     try {
+      if (completed >= this.targetCount) {
+        updateAchievementProgress(this.achievementId, this.targetCount);
+        updateAchievementStatus(this.achievementId, 'completed');
+        this.reportProgress(this.targetCount, `${this.targetCount}/${this.targetCount} operations...`, 'completed');
+
+        return {
+          achievementId: this.achievementId,
+          tier: this.tier,
+          success: true,
+          completedOperations: this.targetCount,
+          totalOperations: this.targetCount,
+          errors,
+          duration: Date.now() - startTime,
+          prNumbers,
+        };
+      }
+
       // Build list of pending operations
       const pendingOps: number[] = [];
-      for (let i = 1; i <= this.targetCount; i++) {
-        if (!completedOperations.has(i)) {
-          pendingOps.push(i);
-        }
+      const maxCompletedOperation = completedOperations.size > 0
+        ? Math.max(...completedOperations)
+        : 0;
+      const remainingCount = this.targetCount - completed;
+
+      for (let i = 1; i <= remainingCount; i++) {
+        pendingOps.push(maxCompletedOperation + i);
       }
 
       // Create tasks for concurrent execution
@@ -175,7 +197,7 @@ export abstract class BaseAchievement {
         tasks,
         concurrency,
         (done, total) => {
-          completed = completedOperations.size + done;
+          completed = Math.min(completedOperations.size + done, this.targetCount);
           updateAchievementProgress(this.achievementId, completed);
           this.reportProgress(completed, `${completed}/${this.targetCount} operations...`);
         }
@@ -197,7 +219,7 @@ export abstract class BaseAchievement {
 
       // Count successful operations
       const successCount = results.filter(r => r.success).length;
-      completed = completedOperations.size + successCount;
+      completed = Math.min(completedOperations.size + successCount, this.targetCount);
 
       // Update final status
       const finalStatus: OperationStatus = completed >= this.targetCount ? 'completed' : 'failed';

@@ -11,7 +11,13 @@ export type AchievementId =
   | 'pull-shark'
   | 'quickdraw'
   | 'galaxy-brain'
-  | 'yolo';
+  | 'yolo'
+  | 'starstruck'
+  | 'public-sponsor'
+  | 'heart-on-your-sleeve'
+  | 'open-sourcerer'
+  | 'arctic-code-vault-contributor'
+  | 'mars-2020-contributor';
 
 // Operation status tracking
 export type OperationStatus = 'pending' | 'in_progress' | 'completed' | 'failed' | 'skipped';
@@ -28,7 +34,10 @@ export type OperationType =
   | 'create_discussion'
   | 'create_answer'
   | 'mark_accepted'
-  | 'merge_own_pr';
+  | 'merge_own_pr'
+  | 'poll_stars'
+  | 'poll_sponsorship'
+  | 'catalog_only';
 
 // Tier configuration with target counts
 export interface TierConfig {
@@ -45,6 +54,14 @@ export interface AchievementDefinition {
   icon: string;
   tiers: TierConfig[];
   estimatedTimePerUnit: number; // milliseconds per operation
+  /** Rough GitHub REST calls per workflow unit (operation or poll cycle); used for dashboard feasibility hints */
+  estimatedRestCallsPerOperation: number;
+  /** If false, workflows are not implemented — UI shows catalog-only / planned */
+  automatable: boolean;
+  /** Optional docs link for help affordance */
+  docsUrl?: string;
+  /** If false, main-account push access to TARGET_REPO is not required (e.g. sponsorship verification). Default true. */
+  requiresRepoWrite?: boolean;
 }
 
 // User-selected achievement with tier
@@ -87,6 +104,8 @@ export interface RepoInfo {
   fullName: string;
   defaultBranch: string;
   hasDiscussions: boolean;
+  /** Present when fetched via repos.get — used for Starstruck progress */
+  stargazersCount?: number;
   permissions: {
     push: boolean;
     pull: boolean;
@@ -192,6 +211,8 @@ export interface ExecutionResult {
   achievementId: AchievementId;
   tier: TierLevel;
   success: boolean;
+  /** Web dashboard stopped the job mid-workflow (cooperative exit). */
+  cancelled?: boolean;
   completedOperations: number;
   totalOperations: number;
   errors: string[];
