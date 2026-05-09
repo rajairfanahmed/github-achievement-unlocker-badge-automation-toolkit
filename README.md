@@ -127,12 +127,12 @@ If you can't understand where to find `token`, `username`, and `target repo`, us
 2. Click your profile photo (top-right).
 3. Click **Your profile**.
 4. Your username is in the URL:
-   - Example URL: `https://github.com/rajairfanahmed`
-   - Username: `rajairfanahmed`
+   - Example URL: `https://github.com/your-username`
+   - Username: `your-username`
 5. Put this in `.env`:
 
 ```env
-GITHUB_USERNAME=rajairfanahmed
+GITHUB_USERNAME=your-username
 ```
 
 ### Step B - Create `GITHUB_TOKEN` (main account token)
@@ -165,11 +165,11 @@ owner/repository-name
 How to find it:
 1. Open your repository in browser.
 2. Look at URL:
-   - Example: `https://github.com/rajairfanahmed/github-achievement-unlocker-badge-automation-toolkit`
+   - Example: `https://github.com/your-username/your-repository-name`
 3. Then:
 
 ```env
-TARGET_REPO=rajairfanahmed/github-achievement-unlocker-badge-automation-toolkit
+TARGET_REPO=your-username/your-repository-name
 ```
 
 If you do not have a repo yet:
@@ -246,6 +246,13 @@ Do not set both to the same account.
 - Uses delays/concurrency controls to reduce throttling
 - Shows API reset ETA in the dashboard
 - Supports cooperative stop for active run
+
+## Public Sponsor and Starstruck Note
+
+- For **Public Sponsor** and **Starstruck**, use only genuine methods.
+- This project does not provide tricks, hacks, or abusive shortcuts for those badges.
+- Public Sponsor requires a real public sponsorship state on GitHub.
+- Starstruck requires real stars from real users on one repository.
 
 ## Troubleshooting
 
