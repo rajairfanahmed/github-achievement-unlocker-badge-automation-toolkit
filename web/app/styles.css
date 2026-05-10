@@ -1450,6 +1450,36 @@ tbody tr:hover {
   font-weight: 600;
 }
 
+.githubLiveSection {
+  border-top: 1px dashed var(--line-strong);
+  margin-top: 4px;
+  padding-top: 14px;
+}
+
+.githubLiveTierLine {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.githubLiveMeta {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.githubLiveSourceLabel {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.githubLiveDetail {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
 .errorBoundary {
   max-width: 520px;
   margin: 48px auto;

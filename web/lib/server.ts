@@ -10,10 +10,11 @@ import {
 } from '../../src/utils/config.js';
 import { quickValidateToken } from '../../src/github/auth.js';
 import { initGitHubClient, initHelperClient, getGitHubClient } from '../../src/github/client.js';
+import { fetchGitHubLiveInsights } from '../../src/github/profileMetrics.js';
 import { areDiscussionsEnabled } from '../../src/github/discussion.js';
 import { ACHIEVEMENT_DEFINITIONS } from '../../src/achievements/index.js';
 import { getAchievement, initDatabase, setDatabaseUser } from '../../src/db/database.js';
-import type { AchievementId, TierLevel } from '../../src/types/index.js';
+import type { AchievementId, GitHubLiveInsight, TierLevel } from '../../src/types/index.js';
 import { toIssue } from './errors';
 import type { WebAchievement, WebHistory, WebIssue, WebRateLimit, WebStatus, TierFeasibility } from './types';
 
@@ -242,6 +243,26 @@ export async function getAchievementsForWeb(): Promise<{ achievements: WebAchiev
     initDatabase();
   }
 
+  let liveInsights: Partial<Record<AchievementId, GitHubLiveInsight>> = {};
+  if (status.username && status.repo && status.configValid) {
+    try {
+      clearConfigCache();
+      const cfg = getLocalConfig();
+      initGitHubClient(cfg);
+      const gh = getGitHubClient();
+      const sponsorCount = await gh.getSponsorshipsAsSponsorCount();
+      liveInsights = await fetchGitHubLiveInsights(
+        gh.api,
+        status.username,
+        status.repo.owner,
+        status.repo.name,
+        sponsorCount
+      );
+    } catch {
+      liveInsights = {};
+    }
+  }
+
   const achievements = ACHIEVEMENT_DEFINITIONS.map((definition) => {
     const requiresHelper = definition.id === 'galaxy-brain' || definition.id === 'yolo';
     const requiresDiscussions = definition.id === 'galaxy-brain';
@@ -318,6 +339,7 @@ export async function getAchievementsForWeb(): Promise<{ achievements: WebAchiev
       unavailableReasons,
       progress,
       tierFeasibility,
+      githubLive: liveInsights[definition.id] ?? null,
     };
   });
 

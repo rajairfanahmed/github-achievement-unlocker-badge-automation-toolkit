@@ -1,4 +1,4 @@
-import type { AchievementId, TierLevel } from '../../src/types/index.js';
+import type { AchievementId, TierLevel, GitHubLiveInsight } from '../../src/types/index.js';
 
 export type HealthState = 'ok' | 'warning' | 'error' | 'unknown';
 
@@ -80,6 +80,11 @@ export interface WebAchievement {
   } | null;
   /** Per-tier feasibility vs current GitHub REST core remaining (conservative estimate). */
   tierFeasibility: TierFeasibility[];
+  /**
+   * Live counts from GitHub APIs where available; inferredTier uses the same thresholds as this app.
+   * Not an official GitHub “badge API” — see summary/detail on each row.
+   */
+  githubLive?: GitHubLiveInsight | null;
 }
 
 export interface WebHistory {

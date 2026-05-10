@@ -35,7 +35,7 @@ const PAGE_INTROS: Record<Section, { headline: string; sub: string }> = {
   },
   achievements: {
     headline: 'Achievements',
-    sub: 'Each card is one profile badge. GitHub names progress levels Default, Bronze, Silver, and Gold (lowest to highest); each level needs more qualifying actions—the numbers on the card are from GitHub’s rules. The dashboard shows what is saved in your local database, not a live copy of GitHub. Only one job runs at a time.',
+    sub: 'Each card uses GitHub’s published tier thresholds. Saved progress comes from your local database; each card also shows a GitHub API section where we can query live counts (merged PRs, repo stars, sponsors). GitHub does not expose official badge-tier endpoints—your profile is still the source of truth for the graphic. Only one job runs at a time.',
   },
   history: {
     headline: 'History',
@@ -945,6 +945,46 @@ export default function Dashboard() {
                         <p className="progressFootnote">
                           “Complete” here means your saved row reached this tier’s target count—it does not guarantee GitHub has
                           already refreshed every badge on your profile.
+                        </p>
+                      </section>
+                    )}
+
+                    {achievement.githubLive && (
+                      <section className="cardSection githubLiveSection" aria-labelledby={`github-live-${achievement.id}`}>
+                        <h3 id={`github-live-${achievement.id}`} className="cardSectionTitle">
+                          GitHub API (live estimate)
+                        </h3>
+                        <p className="cardSectionHelp">{achievement.githubLive.summary}</p>
+                        {achievement.githubLive.qualifyingCount !== null &&
+                          achievement.githubLive.inferredTier !== null && (
+                            <p className="githubLiveTierLine">
+                              Tier from published thresholds (same numbers as this app):{' '}
+                              <strong>
+                                {tierMetaForLevel(achievement.tiers, achievement.githubLive.inferredTier)?.displayName ??
+                                  achievement.githubLive.inferredTier}
+                              </strong>{' '}
+                              —{' '}
+                              <span className="monoMuted">
+                                {achievement.githubLive.qualifyingCount.toLocaleString()} qualifying actions (GitHub data)
+                              </span>
+                            </p>
+                          )}
+                        {achievement.githubLive.qualifyingCount !== null &&
+                          achievement.githubLive.inferredTier === null && (
+                            <p className="githubLiveTierLine monoMuted">
+                              GitHub count: {achievement.githubLive.qualifyingCount.toLocaleString()} (below this badge’s lowest
+                              published threshold).
+                            </p>
+                          )}
+                        <p className="githubLiveMeta">
+                          <span className="githubLiveSourceLabel">Data source:</span>{' '}
+                          <code className="monoMuted">{achievement.githubLive.source}</code>
+                        </p>
+                        {achievement.githubLive.detail && (
+                          <p className="githubLiveDetail">{achievement.githubLive.detail}</p>
+                        )}
+                        <p className="progressFootnote">
+                          This is not an official “badge API.” Compare with your profile; rules and delays are controlled by GitHub.
                         </p>
                       </section>
                     )}

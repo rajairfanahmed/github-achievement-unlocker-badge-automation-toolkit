@@ -46,6 +46,18 @@ export interface TierConfig {
   displayName: string;
 }
 
+/**
+ * Live counts from GitHub public APIs, mapped to the same tier thresholds as achievement definitions in this app.
+ * GitHub does not publish official “achievement tier” API fields; inferredTier is derived from published thresholds.
+ */
+export interface GitHubLiveInsight {
+  qualifyingCount: number | null;
+  inferredTier: TierLevel | null;
+  summary: string;
+  source: 'search' | 'rest' | 'graphql' | 'none';
+  detail?: string;
+}
+
 // Achievement definition
 export interface AchievementDefinition {
   id: AchievementId;
